@@ -1,1294 +1,1127 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suzuki Wolf 50 / RMX 50 (Morini G30) Dyno & Realistic Physics Simulator</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;600;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050811;
-            color: #e2e8f0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0b1329; }
-        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 3px; }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            background: #1e293b;
-            border-radius: 8px;
-            height: 8px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: #f97316;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
-            border: 2px solid #ffffff;
-        }
-
-        .gauge-container {
-            position: relative;
-            width: 190px;
-            height: 190px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
-            border: 4px solid #1e293b;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 12px rgba(249, 115, 22, 0.15);
-            overflow: hidden;
-        }
-
-        .powerband-arc {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.9;
-        }
-
-        .gauge-face-cover {
-            position: absolute;
-            top: 8px; left: 8px; right: 8px; bottom: 8px;
-            background: radial-gradient(circle, #090d16 0%, #020617 100%);
-            border-radius: 50%;
-            z-index: 2;
-            border: 1px solid #1e293b;
-        }
-
-        .needle {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            width: 3.5px;
-            height: 78px;
-            background: #ef4444;
-            transform-origin: bottom center;
-            transform: rotate(-135deg);
-            transition: transform 0.03s linear;
-            box-shadow: 0 0 8px #ef4444;
-            border-radius: 2px;
-            z-index: 5;
-        }
-        .gauge-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 16px;
-            height: 16px;
-            background: #e2e8f0;
-            border: 3px solid #0f172a;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
-
-        .powerband-active {
-            box-shadow: 0 0 18px #f97316, inset 0 0 10px #f97316;
-            border-color: #fb923c !important;
-            color: #ffffff !important;
-            background-color: #ea580c !important;
-            animation: pulse-glow 0.35s infinite alternate;
-        }
-        @keyframes pulse-glow {
-            from { opacity: 0.85; transform: scale(1); }
-            to { opacity: 1; filter: drop-shadow(0 0 10px #f97316); transform: scale(1.02); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suzuki Wolf 50 / RMX 50 (Morini G30) Dyno & Realistic Physics Simulator</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;600;700&display=swap');
+body {
+font-family: 'Inter', sans-serif;
+background-color: #050811;
+color: #e2e8f0;
+user-select: none;
+-webkit-user-select: none;
+}
+.font-orbitron {
+font-family: 'Orbitron', sans-serif;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0b1329; }
+::-webkit-scrollbar-thumb { background: #f97316; border-radius: 3px; }
+input[type=range] {
+-webkit-appearance: none;
+background: #1e293b;
+border-radius: 8px;
+height: 8px;
+}
+input[type=range]::-webkit-slider-thumb {
+-webkit-appearance: none;
+height: 20px;
+width: 20px;
+border-radius: 50%;
+background: #f97316;
+cursor: pointer;
+box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+border: 2px solid #ffffff;
+}
+.gauge-container {
+position: relative;
+width: 190px;
+height: 190px;
+border-radius: 50%;
+background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+border: 4px solid #1e293b;
+box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 12px rgba(249, 115, 22, 0.15);
+overflow: hidden;
+}
+.powerband-arc {
+position: absolute;
+top: 0; left: 0; width: 100%; height: 100%;
+border-radius: 50%;
+pointer-events: none;
+z-index: 1;
+opacity: 0.9;
+}
+.gauge-face-cover {
+position: absolute;
+top: 8px; left: 8px; right: 8px; bottom: 8px;
+background: radial-gradient(circle, #090d16 0%, #020617 100%);
+border-radius: 50%;
+z-index: 2;
+border: 1px solid #1e293b;
+}
+.needle {
+position: absolute;
+bottom: 50%;
+left: 50%;
+width: 3.5px;
+height: 78px;
+background: #ef4444;
+transform-origin: bottom center;
+transform: rotate(-135deg);
+transition: transform 0.03s linear;
+box-shadow: 0 0 8px #ef4444;
+border-radius: 2px;
+z-index: 5;
+}
+.gauge-center {
+position: absolute;
+top: 50%;
+left: 50%;
+width: 16px;
+height: 16px;
+background: #e2e8f0;
+border: 3px solid #0f172a;
+border-radius: 50%;
+transform: translate(-50%, -50%);
+z-index: 10;
+}
+.powerband-active {
+box-shadow: 0 0 18px #f97316, inset 0 0 10px #f97316;
+border-color: #fb923c !important;
+color: #ffffff !important;
+background-color: #ea580c !important;
+animation: pulse-glow 0.35s infinite alternate;
+}
+@keyframes pulse-glow {
+from { opacity: 0.85; transform: scale(1); }
+to { opacity: 1; filter: drop-shadow(0 0 10px #f97316); transform: scale(1.02); }
+}
+</style>
 </head>
 <body class="min-h-screen flex flex-col justify-between p-2 md:p-4 bg-slate-950 text-slate-100">
-
-    <!-- CABEÇALHO DA APLICAÇÃO -->
-    <header class="max-w-7xl mx-auto w-full mb-3 border-b border-slate-800 pb-3 flex flex-col md:flex-row justify-between items-center gap-3">
-        <div class="flex items-center gap-3">
-            <div class="p-2.5 bg-gradient-to-br from-orange-600 to-amber-600 border border-orange-400/30 rounded-xl text-white text-xl shadow-lg shadow-orange-950/40">
-                <i class="fa-solid fa-motorcycle"></i>
-            </div>
-            <div>
-                <h1 class="text-xl md:text-2xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-500">
-                    SUZUKI WOLF 50 / RMX 50 SIMULATOR
-                </h1>
-                <p class="text-xs text-slate-400">Franco Morini G30 Engine Dyno & Real Physics (Anti-Stall & Clutch)</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <div id="stallWarning" class="hidden px-3 py-1 rounded-lg bg-yellow-950/90 border border-yellow-600 text-yellow-400 text-xs font-bold font-mono animate-bounce flex items-center gap-2">
-                <i class="fa-solid fa-triangle-exclamation"></i> MOTOR AFOGADO / GOSTO! (SOLTE A EMBRAIAGEM)
-            </div>
-            <div id="detonationWarning" class="hidden px-3 py-1 rounded-lg bg-red-950/90 border border-red-600 text-red-400 text-xs font-bold font-mono animate-bounce flex items-center gap-2">
-                <i class="fa-solid fa-triangle-exclamation"></i> RISCO DE DETONAÇÃO (SQUISH)
-            </div>
-            <button id="btnAudioToggle" class="bg-slate-900 border border-slate-800 hover:border-orange-500/50 px-3 py-1.5 rounded-xl text-xs font-mono text-slate-300 flex items-center gap-2">
-                <i class="fa-solid fa-volume-high text-orange-400"></i> Som 2T: <span id="audioStatus" class="text-emerald-400 font-bold">Ativado</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="max-w-7xl mx-auto w-full space-y-4">
-
-        <!-- PARTE 1: DYNO & AFINAÇÃO DO MOTOR MORINI G30 -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-
-            <!-- Painel de Controlo do Motor -->
-            <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                    <h2 class="text-sm font-bold font-orbitron text-orange-400 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders"></i> Afinação Franco Morini G30
-                    </h2>
-                    <button id="btnReset" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700">
-                        <i class="fa-solid fa-rotate-left"></i> Reset (Origem)
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                    <!-- Cilindro / Kit -->
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
-                        <label for="kitSelect" class="font-semibold text-slate-300 block">Cilindro / Kit 2T:</label>
-                        <select id="kitSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
-                            <option value="50" selected>Morini Original (Ø41.0mm - 50cc)</option>
-                            <option value="athena74">Athena 74cc Alumínio (Ø47.0mm)</option>
-                            <option value="airsal74">Airsal 74cc Alumínio (Ø48.0mm)</option>
-                            <option value="barikit80">Barikit 80cc Alumínio (Ø48.0mm / Race)</option>
-                        </select>
-                    </div>
-
-                    <!-- Cambota / Curso -->
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
-                        <label for="crankshaftSelect" class="font-semibold text-slate-300 block">Cambota / Curso:</label>
-                        <select id="crankshaftSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
-                            <option value="stock" selected>Origem (Curso 39.0mm)</option>
-                            <option value="racing">Racing Reforçada (Biela Polida)</option>
-                            <option value="longstroke">Curso Longo (Curso 42.0mm)</option>
-                        </select>
-                    </div>
-
-                    <!-- Carburador -->
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
-                        <label for="carbSelect" class="font-semibold text-slate-300 block">Carburador:</label>
-                        <select id="carbSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
-                            <option value="17.5" selected>17.5mm DellOrto PHBN</option>
-                            <option value="19">19mm DellOrto PHBG</option>
-                            <option value="21">21mm DellOrto Black Edition</option>
-                            <option value="24">24mm OKO / PWK Flat-slide</option>
-                            <option value="26">26mm Stage6 R/T PWK</option>
-                            <option value="28">28mm Keihin / Stage6 PWK Race</option>
-                            <option value="30">30mm Koso Mega Power</option>
-                        </select>
-                    </div>
-
-                    <!-- Escape -->
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
-                        <label for="exhaustSelect" class="font-semibold text-slate-300 block">Escape de Expansão:</label>
-                        <select id="exhaustSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
-                            <option value="stock" selected>Escape Original Estrangulado</option>
-                            <option value="proma">Proma / Turbokit 50cc</option>
-                            <option value="voca">VOCA Rookie 50/70</option>
-                            <option value="yasuni">Yasuni R3 Carrera</option>
-                            <option value="custom">Feito Sob Medida / Artesanal Race</option>
-                        </select>
-                    </div>
-
-                    <!-- Ignição / Rotor -->
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
-                        <label for="ignitionSelect" class="font-semibold text-slate-300 block">Sistema de Ignição (Rotor):</label>
-                        <select id="ignitionSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
-                            <option value="stock" selected>Rotor Normal de Origem (Pesado c/ Luz)</option>
-                            <option value="stock_lightened">Rotor Original Aliviado / Trabalhado (c/ Luz)</option>
-                            <option value="hpi">Rotor Aliviado HPI (Analógico / Avanço Fixo)</option>
-                            <option value="selettra">Selettra / PVL Rotor Interno (Variável)</option>
-                        </select>
-                    </div>
-
-                    <!-- Lamelas de Admissão -->
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
-                        <label for="reedsSelect" class="font-semibold text-slate-300 block">Lamelas (Caixa de Admissão):</label>
-                        <select id="reedsSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
-                            <option value="stock" selected>Lamelas de Origem (Fibra grossa)</option>
-                            <option value="fiber030">Lamelas Fibra de Vidro 0.30mm (Flexíveis)</option>
-                            <option value="carbon035">Lamelas Carbono Barikit 0.35mm (Performance)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Sliders Técnicos -->
-                <div class="space-y-2">
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl">
-                        <div class="flex justify-between text-xs mb-1">
-                            <label for="ignitionTimingInput" class="font-semibold text-slate-300">Avanço de Ignição / Ponto do Rotor:</label>
-                            <span id="ignitionTimingVal" class="font-mono font-bold text-orange-400">18° (BTDC)</span>
-                        </div>
-                        <input type="range" id="ignitionTimingInput" min="8" max="30" step="1" value="18" class="w-full">
-                    </div>
-
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl">
-                        <div class="flex justify-between text-xs mb-1">
-                            <label for="squishInput" class="font-semibold text-slate-300">Medida de Squish:</label>
-                            <span id="squishVal" class="font-mono font-bold text-orange-400">1.10 mm</span>
-                        </div>
-                        <input type="range" id="squishInput" min="0.50" max="1.50" step="0.05" value="1.10" class="w-full">
-                    </div>
-
-                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl">
-                        <div class="flex justify-between text-xs mb-1">
-                            <label for="exhaustDegInput" class="font-semibold text-slate-300">Diagrama de Escape (°):</label>
-                            <span id="exhaustDegVal" class="font-mono font-bold text-orange-400">168°</span>
-                        </div>
-                        <input type="range" id="exhaustDegInput" min="165" max="205" step="1" value="168" class="w-full">
-                    </div>
-                </div>
-
-                <!-- Transmissão Personalizada (Pinhão & Cremalheira) -->
-                <div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl space-y-2.5 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold text-slate-300">Transmissão Secundária (Personalizada):</span>
-                        <span id="ratioDisplayVal" class="font-mono font-bold text-orange-400">Relação: 3.43 : 1</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label for="frontSprocketInput" class="text-[10px] text-slate-400 block mb-1">Pinhão de Ataque:</label>
-                            <input type="number" id="frontSprocketInput" min="9" max="18" value="14" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 text-center font-mono focus:ring-1 focus:ring-orange-500">
-                        </div>
-                        <div>
-                            <label for="rearSprocketInput" class="text-[10px] text-slate-400 block mb-1">Cremalheira (Coroa):</label>
-                            <input type="number" id="rearSprocketInput" min="35" max="65" value="48" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 text-center font-mono focus:ring-1 focus:ring-orange-500">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gráfico Dyno -->
-            <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <h2 class="text-sm font-bold font-orbitron text-slate-100 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-line text-orange-500"></i> Curva de Potência e Binário
-                        </h2>
-                        <p class="text-[11px] text-slate-400">Medição teórica realista no banco de ensaio (Dyno Run)</p>
-                    </div>
-                    <div class="flex gap-2.5">
-                        <div class="text-right font-mono bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
-                            <div class="text-[9px] text-slate-400 uppercase">Motor (Crank)</div>
-                            <div class="text-base font-black text-orange-400" id="peakPowerCrankDisplay">-- cv</div>
-                        </div>
-                        <div class="text-right font-mono bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
-                            <div class="text-[9px] text-slate-400 uppercase">À Roda (Wheel)</div>
-                            <div class="text-base font-black text-emerald-400" id="peakPowerWheelDisplay">-- cv</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="relative w-full h-[210px] bg-slate-950/80 p-2 rounded-xl border border-slate-800">
-                    <canvas id="dynoChart"></canvas>
-                </div>
-
-                <div class="grid grid-cols-4 gap-2 mt-3 text-center font-mono">
-                    <div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
-                        <span class="text-[9px] text-slate-400 block uppercase">Binário Máx.</span>
-                        <span id="maxTorqueVal" class="text-xs font-bold text-blue-400">-- Nm</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
-                        <span class="text-[9px] text-slate-400 block uppercase">Pico RPM</span>
-                        <span id="peakRpmVal" class="text-xs font-bold text-amber-400">-- RPM</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
-                        <span class="text-[9px] text-slate-400 block uppercase">Taxa Comp.</span>
-                        <span id="compRatioVal" class="text-xs font-bold text-emerald-400">-- : 1</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
-                        <span class="text-[9px] text-slate-400 block uppercase">Velocidade Téorica</span>
-                        <span id="topSpeedVal" class="text-xs font-bold text-purple-400">-- km/h</span>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- PARTE 2: SIMULADOR DE CONDUÇÃO E ANIMAÇÃO DA MOTA -->
-        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-2xl flex flex-col gap-4">
-
-            <div class="flex flex-col md:flex-row justify-between items-center gap-3 border-b border-slate-800 pb-3">
-                <div class="flex items-center gap-3">
-                    <h2 class="text-base font-bold font-orbitron text-orange-400 flex items-center gap-2">
-                        <i class="fa-solid fa-road"></i> Simulador de Estrada em Tempo Real
-                    </h2>
-
-                    <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
-                        <button id="btnSelectWolf" class="px-3 py-1 text-xs font-bold font-orbitron rounded-lg bg-orange-600 text-white shadow">
-                            SUZUKI WOLF
-                        </button>
-                        <button id="btnSelectRmx" class="px-3 py-1 text-xs font-bold font-orbitron rounded-lg text-slate-400 hover:text-white">
-                            SUZUKI RMX
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <button id="btnClutch" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-xs font-bold font-orbitron text-amber-400 flex items-center gap-2 shadow transition-all">
-                        <i class="fa-solid fa-hand"></i> Puxar Embraiagem (<span id="clutchStatusText">Solta</span>)
-                    </button>
-                    <div id="powerbandBadge" class="px-4 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-500 font-orbitron text-xs font-bold transition-all">
-                        ⚡ POWERBAND : OFF
-                    </div>
-                </div>
-            </div>
-
-            <!-- ECRÃ CANVAS 2D -->
-            <div class="relative w-full h-[230px] bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-inner flex items-center justify-center">
-                <canvas id="bikeCanvas" class="w-full h-full block"></canvas>
-
-                <div class="absolute top-3 left-4 font-orbitron">
-                    <div class="text-3xl font-black text-slate-100" id="hudSpeed">0 <span class="text-xs font-normal text-slate-400">KM/H</span></div>
-                    <div class="text-xs font-bold text-orange-400" id="hudGear">MUDANÇA: NEUTRO</div>
-                </div>
-            </div>
-
-            <!-- PAINEL DE CONDUÇÃO -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-
-                <div class="md:col-span-5 flex items-center justify-around bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
-                    <!-- Tacómetro Analógico -->
-                    <div class="gauge-container flex items-center justify-center shrink-0 scale-90">
-                        <div id="gaugePowerbandArc" class="powerband-arc"></div>
-                        <div class="gauge-face-cover"></div>
-                        <div id="gaugeNeedle" class="needle"></div>
-                        <div class="gauge-center"></div>
-                        <div class="absolute bottom-5 text-center font-orbitron z-10">
-                            <span id="liveRpmDisplay" class="text-base font-bold text-orange-400 block">1400</span>
-                            <span class="text-[7px] text-slate-400 tracking-widest uppercase">RPM x1000</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2 text-center font-mono">
-                        <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                            <span class="text-[9px] text-slate-400 block uppercase">Mudança</span>
-                            <span id="displayGearNum" class="text-2xl font-black text-orange-400 font-orbitron">N</span>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                            <span class="text-[9px] text-slate-400 block uppercase">Velocidade</span>
-                            <span id="displaySpeedNum" class="text-lg font-bold text-emerald-400">0.0 km/h</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-7 flex flex-col justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <button id="btnGearDown" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold font-orbitron rounded-xl border border-slate-700 shadow flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-chevron-down text-orange-400"></i> REDUZIR (A)
-                        </button>
-                        <button id="btnGearUp" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold font-orbitron rounded-xl border border-slate-700 shadow flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-chevron-up text-orange-400"></i> SUBIR (S)
-                        </button>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-mono text-slate-400">
-                            <span>ACELERADOR (Rato / Toque / ESPAÇO)</span>
-                            <span id="throttlePercentVal" class="text-emerald-400 font-bold">0%</span>
-                        </div>
-                        <input type="range" id="throttleSlider" min="0" max="100" value="0" class="w-full h-3">
-                    </div>
-
-                    <button id="btnThrottle" class="w-full py-4 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 active:scale-[0.98] text-white font-black font-orbitron tracking-wider text-sm md:text-base rounded-xl shadow-lg shadow-orange-950/50 border border-orange-400/30 flex items-center justify-center gap-2 cursor-pointer select-none">
-                        <i class="fa-solid fa-gauge"></i> PUXAR ACELERADOR A FUNDO
-                    </button>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- PARTE 3: GERADOR E PROJETOR DE ESCAPES DE EXPANSÃO 2T -->
-        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-2xl flex flex-col gap-4">
-            <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                <div>
-                    <h2 class="text-base font-bold font-orbitron text-amber-400 flex items-center gap-2">
-                        <i class="fa-solid fa-volcano"></i> Calculador & Projetor de Escapes de Expansão (Chamber Designer)
-                    </h2>
-                    <p class="text-xs text-slate-400">Projeto de medidas dos cones (Coletor, Difusor, Barriga, Contra-cone e Agulha/Silenciador)</p>
-                </div>
-                <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 font-mono text-xs text-amber-400">
-                    Velocidade do Som no Escape (Vs): <span class="font-bold">520 m/s</span>
-                </div>
-            </div>
-
-            <!-- ESQUEMA VISUAL DO ESCAPE -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col items-center justify-center overflow-x-auto">
-                <svg id="exhaustSvg" viewBox="0 0 800 160" class="w-full max-w-3xl h-auto">
-                    <!-- Fundo / Linha Central -->
-                    <line x1="20" y1="80" x2="780" y2="80" stroke="#334155" stroke-dasharray="4,4" stroke-width="1"/>
-                    
-                    <!-- Coletor (Header Pipe) -->
-                    <polygon id="svgHeader" points="40,68 180,65 180,95 40,92" fill="rgba(249, 115, 22, 0.25)" stroke="#f97316" stroke-width="2"/>
-                    <text x="110" y="84" fill="#f97316" font-size="10" font-family="Orbitron" text-anchor="middle">Coletor</text>
-
-                    <!-- Difusor (Divergent Cone) -->
-                    <polygon id="svgDiffuser" points="180,65 420,40 420,120 180,95" fill="rgba(59, 130, 246, 0.25)" stroke="#3b82f6" stroke-width="2"/>
-                    <text x="300" y="84" fill="#3b82f6" font-size="10" font-family="Orbitron" text-anchor="middle">Difusor</text>
-
-                    <!-- Corpo / Barriga (Belly) -->
-                    <polygon id="svgBelly" points="420,40 520,40 520,120 420,120" fill="rgba(234, 179, 8, 0.25)" stroke="#eab308" stroke-width="2"/>
-                    <text x="470" y="84" fill="#eab308" font-size="10" font-family="Orbitron" text-anchor="middle">Barriga</text>
-
-                    <!-- Contra-cone (Convergent Cone) -->
-                    <polygon id="svgBaffle" points="520,40 680,68 680,92 520,120" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" stroke-width="2"/>
-                    <text x="600" y="84" fill="#ef4444" font-size="10" font-family="Orbitron" text-anchor="middle">Contra-cone</text>
-
-                    <!-- Tubo da Ponteira / Silenciador (Stinger) -->
-                    <polygon id="svgStinger" points="680,68 760,68 760,92 680,92" fill="rgba(16, 185, 129, 0.25)" stroke="#10b981" stroke-width="2"/>
-                    <text x="720" y="84" fill="#10b981" font-size="9" font-family="Orbitron" text-anchor="middle">Ponteira</text>
-                </svg>
-            </div>
-
-            <!-- TABELA DE MEDIDAS CALCULADAS -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 font-mono text-center">
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[9px] text-slate-400 block uppercase font-orbitron">Diâmetro do Coletor</span>
-                    <span id="exHeaderDia" class="text-sm font-bold text-orange-400">-- mm</span>
-                </div>
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[9px] text-slate-400 block uppercase font-orbitron">Diâmetro da Barriga</span>
-                    <span id="exBellyDia" class="text-sm font-bold text-yellow-400">-- mm</span>
-                </div>
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[9px] text-slate-400 block uppercase font-orbitron">Diâmetro da Ponteira</span>
-                    <span id="exStingerDia" class="text-sm font-bold text-emerald-400">-- mm</span>
-                </div>
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[9px] text-slate-400 block uppercase font-orbitron">Comprimento Coletor</span>
-                    <span id="exHeaderLen" class="text-sm font-bold text-slate-200">-- mm</span>
-                </div>
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[9px] text-slate-400 block uppercase font-orbitron">Comprimento Difusor</span>
-                    <span id="exDiffuserLen" class="text-sm font-bold text-blue-400">-- mm</span>
-                </div>
-                <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[9px] text-slate-400 block uppercase font-orbitron">Comprimento Total (L)</span>
-                    <span id="exTotalLen" class="text-sm font-bold text-purple-400">-- mm</span>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="max-w-7xl mx-auto w-full text-center text-xs text-slate-500 py-3 border-t border-slate-800/80">
-        Simulador Realista com Embraiagem e Anti-Stall — Suzuki Wolf 50 & Suzuki RMX 50 (Franco Morini G30).
-    </footer>
-
-    <!-- LÓGICA E FÍSICA JAVASCRIPT -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const kitSelect = document.getElementById('kitSelect');
-            const crankshaftSelect = document.getElementById('crankshaftSelect');
-            const squishInput = document.getElementById('squishInput');
-            const squishVal = document.getElementById('squishVal');
-            const exhaustDegInput = document.getElementById('exhaustDegInput');
-            const exhaustDegVal = document.getElementById('exhaustDegVal');
-            const carbSelect = document.getElementById('carbSelect');
-            const exhaustSelect = document.getElementById('exhaustSelect');
-            const ignitionSelect = document.getElementById('ignitionSelect');
-            const reedsSelect = document.getElementById('reedsSelect');
-            const ignitionTimingInput = document.getElementById('ignitionTimingInput');
-            const ignitionTimingVal = document.getElementById('ignitionTimingVal');
-            
-            const frontSprocketInput = document.getElementById('frontSprocketInput');
-            const rearSprocketInput = document.getElementById('rearSprocketInput');
-            const ratioDisplayVal = document.getElementById('ratioDisplayVal');
-
-            const btnReset = document.getElementById('btnReset');
-
-            const peakPowerCrankDisplay = document.getElementById('peakPowerCrankDisplay');
-            const peakPowerWheelDisplay = document.getElementById('peakPowerWheelDisplay');
-            const maxTorqueVal = document.getElementById('maxTorqueVal');
-            const peakRpmVal = document.getElementById('peakRpmVal');
-            const compRatioVal = document.getElementById('compRatioVal');
-            const topSpeedVal = document.getElementById('topSpeedVal');
-            const detonationWarning = document.getElementById('detonationWarning');
-            const stallWarning = document.getElementById('stallWarning');
-
-            const btnSelectWolf = document.getElementById('btnSelectWolf');
-            const btnSelectRmx = document.getElementById('btnSelectRmx');
-            const btnClutch = document.getElementById('btnClutch');
-            const clutchStatusText = document.getElementById('clutchStatusText');
-            const powerbandBadge = document.getElementById('powerbandBadge');
-            const bikeCanvas = document.getElementById('bikeCanvas');
-            const ctxCanvas = bikeCanvas.getContext('2d');
-
-            const gaugeNeedle = document.getElementById('gaugeNeedle');
-            const gaugePowerbandArc = document.getElementById('gaugePowerbandArc');
-            const liveRpmDisplay = document.getElementById('liveRpmDisplay');
-            const displayGearNum = document.getElementById('displayGearNum');
-            const displaySpeedNum = document.getElementById('displaySpeedNum');
-            const hudSpeed = document.getElementById('hudSpeed');
-            const hudGear = document.getElementById('hudGear');
-
-            const btnGearDown = document.getElementById('btnGearDown');
-            const btnGearUp = document.getElementById('btnGearUp');
-            const throttleSlider = document.getElementById('throttleSlider');
-            const throttlePercentVal = document.getElementById('throttlePercentVal');
-            const btnThrottle = document.getElementById('btnThrottle');
-
-            const btnAudioToggle = document.getElementById('btnAudioToggle');
-            const audioStatus = document.getElementById('audioStatus');
-
-            // Elementos de Cálculo do Escape
-            const exHeaderDia = document.getElementById('exHeaderDia');
-            const exBellyDia = document.getElementById('exBellyDia');
-            const exStingerDia = document.getElementById('exStingerDia');
-            const exHeaderLen = document.getElementById('exHeaderLen');
-            const exDiffuserLen = document.getElementById('exDiffuserLen');
-            const exTotalLen = document.getElementById('exTotalLen');
-
-            let bikeType = 'wolf';
-            let currentGear = 0;
-            let isClutchPulled = false;
-            let isStalled = false;
-            
-            const moriniPrimaryRatio = 3.842;
-            const moriniGearRatios = [0, 3.166, 2.000, 1.500, 1.217, 1.041, 0.923];
-            
-            let currentRpm = 1400;
-            let currentSpeed = 0;
-            let wheelieAngle = 0;
-            let roadOffset = 0;
-            let wheelRotationAngle = 0;
-
-            let audioEnabled = true;
-            let audioCtx = null;
-            let oscMain = null;
-            let oscHarmonic = null;
-            let masterGain = null;
-            let filterNode = null;
-            let isSpacePressed = false;
-
-            const ctxChart = document.getElementById('dynoChart').getContext('2d');
-            const rpmRange = [];
-            for (let r = 2000; r <= 15000; r += 250) rpmRange.push(r);
-
-            const dynoChart = new Chart(ctxChart, {
-                type: 'line',
-                data: {
-                    labels: rpmRange,
-                    datasets: [
-                        {
-                            label: 'Potência Motor (cv)',
-                            data: [],
-                            borderColor: '#f97316',
-                            backgroundColor: 'rgba(249, 115, 22, 0.15)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.28,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Potência à Roda (cv)',
-                            data: [],
-                            borderColor: '#10b981',
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            tension: 0.28,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Binário (Nm)',
-                            data: [],
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            borderDash: [4, 4],
-                            tension: 0.28,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: false,
-                    interaction: { mode: 'index', intersect: false },
-                    scales: {
-                        x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { family: 'Orbitron', size: 8 } } },
-                        y: { type: 'linear', position: 'left', title: { display: true, text: 'Potência (cv)', color: '#f97316' }, grid: { color: '#1e293b' }, ticks: { color: '#f97316' }, min: 0, max: 18 },
-                        y1: { type: 'linear', position: 'right', title: { display: true, text: 'Binário (Nm)', color: '#3b82f6' }, grid: { drawOnChartArea: false }, ticks: { color: '#3b82f6' }, min: 0, max: 14 }
-                    },
-                    plugins: { legend: { labels: { color: '#cbd5e1', font: { family: 'Inter', size: 10 } } } }
-                }
-            });
-
-            function calculateExhaustGeometry(targetRpm, exhaustDurationDeg, cc) {
-                // Velocidade Média do Som nos gases de escape (m/s)
-                const soundSpeed = 520; 
-                
-                // Comprimento de Sintonização de Onda do Escape L (mm) - Fórmula Jennings
-                const L = Math.round((exhaustDurationDeg * soundSpeed * 1000) / (targetRpm * 12));
-
-                // Diâmetro do Coletor de Entrada (mm)
-                const headerDia = Math.round(Math.sqrt(cc) * 3.8);
-
-                // Diâmetro do Corpo / Barriga do Escape (mm)
-                const bellyDia = Math.round(headerDia * 2.7);
-
-                // Diâmetro do Tubo de Saída / Ponteira (Stinger) (mm)
-                const stingerDia = Math.round(headerDia * 0.58);
-
-                // Comprimentos dos trechos (mm)
-                const headerLen = Math.round(L * 0.28);
-                const diffuserLen = Math.round(L * 0.38);
-
-                if (exHeaderDia) exHeaderDia.textContent = `${headerDia} mm`;
-                if (exBellyDia) exBellyDia.textContent = `${bellyDia} mm`;
-                if (exStingerDia) exStingerDia.textContent = `${stingerDia} mm`;
-                if (exHeaderLen) exHeaderLen.textContent = `${headerLen} mm`;
-                if (exDiffuserLen) exDiffuserLen.textContent = `${diffuserLen} mm`;
-                if (exTotalLen) exTotalLen.textContent = `${L} mm`;
-            }
-
-            function calculatePerformance() {
-                const kitVal = kitSelect ? kitSelect.value : '50';
-                const crankshaft = crankshaftSelect ? crankshaftSelect.value : 'stock';
-                const squish = squishInput ? parseFloat(squishInput.value) : 1.10;
-                const exhaustDeg = exhaustDegInput ? parseInt(exhaustDegInput.value) : 168;
-                const carb = carbSelect ? parseFloat(carbSelect.value) : 17.5;
-                const exhaust = exhaustSelect ? exhaustSelect.value : 'stock';
-                const ignition = ignitionSelect ? ignitionSelect.value : 'stock';
-                const reeds = reedsSelect ? reedsSelect.value : 'stock';
-                const timingDeg = ignitionTimingInput ? parseInt(ignitionTimingInput.value) : 18;
-                
-                let frontTeeth = frontSprocketInput ? parseInt(frontSprocketInput.value) || 14 : 14;
-                let rearTeeth = rearSprocketInput ? parseInt(rearSprocketInput.value) || 48 : 48;
-
-                let isStock = (kitVal === '50' && crankshaft === 'stock' && carb === 17.5 && exhaust === 'stock' && ignition === 'stock' && reeds === 'stock' && squish === 1.10 && exhaustDeg === 168 && timingDeg === 18 && frontTeeth === 14 && rearTeeth === 48);
-                
-                let cc = 50;
-                let baseHP = 4.8; 
-                if (kitVal === '50') { baseHP = 7.5; cc = 50; }
-                else if (kitVal === 'airsal74') { baseHP = 11.0; cc = 74; }
-                else if (kitVal === 'athena74') { baseHP = 12.8; cc = 74; }
-                else if (kitVal === 'barikit80') { baseHP = 14.5; cc = 80; }
-
-                let strokeMultiplier = 1.0;
-                if (crankshaft === 'racing') strokeMultiplier = 1.02;
-                if (crankshaft === 'longstroke') strokeMultiplier = 1.06;
-
-                let carbFactor = carb / 24;
-
-                let ignitionMultiplier = 1.0;
-                let ignitionRpmBonus = 0;
-                if (ignition === 'stock_lightened') {
-                    ignitionMultiplier = 1.02;
-                    ignitionRpmBonus = 200;
-                } else if (ignition === 'hpi') {
-                    ignitionMultiplier = 1.04;
-                    ignitionRpmBonus = 400;
-                } else if (ignition === 'selettra') {
-                    ignitionMultiplier = 1.08;
-                    ignitionRpmBonus = 900;
-                }
-
-                // Cálculo do Impacto do Avanço de Ignição (° BTDC)
-                let timingFactor = 1.0 + ((timingDeg - 18) * 0.008); 
-                let timingDetonationRisk = timingDeg >= 24; 
-                
-                let reedsMultiplier = 1.0;
-                if (reeds === 'fiber030') reedsMultiplier = 1.02;
-                if (reeds === 'carbon035') reedsMultiplier = 1.05;
-
-                let squishFactor = 1.0;
-                let squishDetonationRisk = false;
-                if (squish >= 0.70 && squish <= 0.90) {
-                    squishFactor = 1.04;
-                } else if (squish < 0.70) {
-                    squishFactor = 1.0;
-                    squishDetonationRisk = true;
-                } else {
-                    squishFactor = 1.0 - ((squish - 0.90) * 0.10);
-                }
-
-                let detonationRisk = squishDetonationRisk || timingDetonationRisk;
-
-                let targetPeakRpm = isStock ? 6200 : (8500 + ((exhaustDeg - 165) * 90) + ignitionRpmBonus - ((timingDeg - 18) * 25));
-                let exhaustMultiplier = isStock ? 0.75 : 1.0;
-                if (exhaust === 'proma') { targetPeakRpm += 300; exhaustMultiplier = 1.08; }
-                if (exhaust === 'voca') { targetPeakRpm += 900; exhaustMultiplier = 1.18; }
-                if (exhaust === 'yasuni') { targetPeakRpm += 1300; exhaustMultiplier = 1.25; }
-                if (exhaust === 'custom') { targetPeakRpm += 1600; exhaustMultiplier = 1.32; }
-
-                calculateExhaustGeometry(targetPeakRpm, exhaustDeg, cc);
-
-                let maxPowerCrank = baseHP * strokeMultiplier * (carbFactor * 0.30 + 0.70) * squishFactor * exhaustMultiplier * reedsMultiplier * ignitionMultiplier * timingFactor;
-                if (isStock) maxPowerCrank = 4.8;
-
-                let maxPowerWheel = maxPowerCrank * 0.84;
-
-                const powerCrankCurve = [];
-                const powerWheelCurve = [];
-                const torqueCurve = [];
-                let maxTorqueCalculated = 0;
-
-                rpmRange.forEach(rpm => {
-                    let hpCrank = 0;
-                    if (rpm < targetPeakRpm) {
-                        const x = (rpm - 1400) / (targetPeakRpm - 1400);
-                        hpCrank = maxPowerCrank * Math.pow(x, isStock ? 1.8 : 2.2);
-                    } else {
-                        const overrevSlope = isStock ? 4.5 : ((exhaustDeg > 190) ? 1.3 : 2.4);
-                        const x = (rpm - targetPeakRpm) / (isStock ? 1400 : 3200);
-                        hpCrank = maxPowerCrank * Math.exp(-x * overrevSlope);
-                    }
-                    if (hpCrank < 0.2) hpCrank = 0.2;
-
-                    let hpWheel = hpCrank * 0.84;
-                    let torque = (hpCrank * 7000) / rpm;
-                    if (torque > maxTorqueCalculated) maxTorqueCalculated = torque;
-
-                    powerCrankCurve.push(parseFloat(hpCrank.toFixed(2)));
-                    powerWheelCurve.push(parseFloat(hpWheel.toFixed(2)));
-                    torqueCurve.push(parseFloat(torque.toFixed(2)));
-                });
-
-                let secondaryRatio = rearTeeth / frontTeeth;
-                if (ratioDisplayVal) ratioDisplayVal.textContent = `Relação: ${secondaryRatio.toFixed(2)} : 1`;
-
-                let tireCircumferenceMeters = (bikeType === 'wolf') ? 1.845 : 1.960;
-
-                let totalTopGearRatio = moriniPrimaryRatio * moriniGearRatios[6] * secondaryRatio;
-                let topSpeedCalculated = (targetPeakRpm * tireCircumferenceMeters * 60) / (totalTopGearRatio * 1000);
-                if (isStock && bikeType === 'wolf') topSpeedCalculated = 55.0;
-
-                return {
-                    powerCrankCurve,
-                    powerWheelCurve,
-                    torqueCurve,
-                    maxPowerCrank: parseFloat(maxPowerCrank.toFixed(1)),
-                    maxPowerWheel: parseFloat(maxPowerWheel.toFixed(1)),
-                    maxTorque: parseFloat(maxTorqueCalculated.toFixed(1)),
-                    peakRpm: Math.round(targetPeakRpm),
-                    compRatio: (14.2 - (squish * 2.3)).toFixed(1),
-                    topSpeed: Math.round(topSpeedCalculated),
-                    detonationRisk,
-                    frontTeeth,
-                    rearTeeth,
-                    tireCircumferenceMeters,
-                    exhaustDeg,
-                    isStock,
-                    powerbandStart: isStock ? 5200 : Math.round(targetPeakRpm - 1200),
-                    powerbandEnd: isStock ? 8200 : Math.round(targetPeakRpm + 1400)
-                };
-            }
-
-            function updateDynoUI() {
-                if (squishVal && squishInput) squishVal.textContent = `${parseFloat(squishInput.value).toFixed(2)} mm`;
-                if (exhaustDegVal && exhaustDegInput) exhaustDegVal.textContent = `${exhaustDegInput.value}°`;
-                if (ignitionTimingVal && ignitionTimingInput) ignitionTimingVal.textContent = `${ignitionTimingInput.value}° (BTDC)`;
-
-                const res = calculatePerformance();
-                dynoChart.data.datasets[0].data = res.powerCrankCurve;
-                dynoChart.data.datasets[1].data = res.powerWheelCurve;
-                dynoChart.data.datasets[2].data = res.torqueCurve;
-                dynoChart.update();
-
-                if (peakPowerCrankDisplay) peakPowerCrankDisplay.textContent = `${res.maxPowerCrank} cv`;
-                if (peakPowerWheelDisplay) peakPowerWheelDisplay.textContent = `${res.maxPowerWheel} cv`;
-                if (maxTorqueVal) maxTorqueVal.textContent = `${res.maxTorque} Nm`;
-                if (peakRpmVal) peakRpmVal.textContent = `${res.peakRpm} RPM`;
-                if (compRatioVal) compRatioVal.textContent = `${res.compRatio} : 1`;
-                if (topSpeedVal) topSpeedVal.textContent = `${res.topSpeed} km/h`;
-
-                if (detonationWarning) {
-                    if (res.detonationRisk) detonationWarning.classList.remove('hidden');
-                    else detonationWarning.classList.add('hidden');
-                }
-
-                const minRpm = 0;
-                const maxRpm = 15000;
-                const startAngle = -135 + ((res.powerbandStart - minRpm) / (maxRpm - minRpm)) * 270;
-                const endAngle = -135 + ((res.powerbandEnd - minRpm) / (maxRpm - minRpm)) * 270;
-
-                const startPct = ((startAngle + 135) / 270) * 100;
-                const endPct = ((endAngle + 135) / 270) * 100;
-
-                if (gaugePowerbandArc) {
-                    gaugePowerbandArc.style.background = `conic-gradient(from 225deg at 50% 50%, transparent 0deg, rgba(249, 115, 22, 0) ${startPct}%, rgba(249, 115, 22, 0.9) ${startPct}%, rgba(249, 115, 22, 0.9) ${endPct}%, transparent ${endPct}%)`;
-                }
-            }
-
-            function resizeCanvas() {
-                if (!bikeCanvas) return;
-                bikeCanvas.width = bikeCanvas.clientWidth || 600;
-                bikeCanvas.height = bikeCanvas.clientHeight || 230;
-            }
-
-            function drawBikeScene() {
-                if (!ctxCanvas || !bikeCanvas) return;
-                const w = bikeCanvas.width;
-                const h = bikeCanvas.height;
-
-                ctxCanvas.clearRect(0, 0, w, h);
-
-                const groundY = h - 35;
-                ctxCanvas.fillStyle = '#090d16';
-                ctxCanvas.fillRect(0, groundY, w, 35);
-
-                ctxCanvas.fillStyle = '#f97316';
-                ctxCanvas.fillRect(0, groundY - 3, w, 3);
-
-                ctxCanvas.strokeStyle = '#334155';
-                ctxCanvas.lineWidth = 3;
-                ctxCanvas.setLineDash([30, 30]);
-                ctxCanvas.lineDashOffset = roadOffset;
-                ctxCanvas.beginPath();
-                ctxCanvas.moveTo(0, groundY + 16);
-                ctxCanvas.lineTo(w, groundY + 16);
-                ctxCanvas.stroke();
-                ctxCanvas.setLineDash([]);
-
-                const cx = w * 0.45;
-                const cy = groundY - 65;
-
-                wheelRotationAngle += (currentSpeed * 0.055);
-
-                ctxCanvas.save();
-                ctxCanvas.translate(cx, cy);
-                ctxCanvas.rotate(-wheelieAngle * Math.PI / 180);
-
-                if (bikeType === 'wolf') {
-                    // Chassi perimetral em alumínio polido
-                    ctxCanvas.strokeStyle = '#e2e8f0';
-                    ctxCanvas.lineWidth = 8;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(-50, 15);
-                    ctxCanvas.lineTo(-10, -25);
-                    ctxCanvas.lineTo(35, -20);
-                    ctxCanvas.lineTo(55, 20);
-                    ctxCanvas.stroke();
-
-                    // Motor Franco Morini G30
-                    ctxCanvas.fillStyle = '#0f172a';
-                    ctxCanvas.strokeStyle = '#475569';
-                    ctxCanvas.lineWidth = 2;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.roundRect(-22, 5, 44, 34, 6);
-                    ctxCanvas.fill();
-                    ctxCanvas.stroke();
-
-                    // Escape de expansão cromado
-                    ctxCanvas.strokeStyle = '#94a3b8';
-                    ctxCanvas.lineWidth = 6;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(10, 10);
-                    ctxCanvas.quadraticCurveTo(55, 35, 75, 15);
-                    ctxCanvas.stroke();
-                    ctxCanvas.fillStyle = '#cbd5e1';
-                    ctxCanvas.fillRect(68, 10, 20, 8);
-
-                    // Depósito e Carenagem Preta
-                    ctxCanvas.fillStyle = '#111827';
-                    ctxCanvas.beginPath();
-                    ctxCanvas.roundRect(-36, -46, 74, 25, [6, 16, 6, 6]);
-                    ctxCanvas.fill();
-                    ctxCanvas.strokeStyle = '#38bdf8';
-                    ctxCanvas.lineWidth = 1.5;
-                    ctxCanvas.stroke();
-
-                    // Banco preto
-                    ctxCanvas.fillStyle = '#1f2937';
-                    ctxCanvas.beginPath();
-                    ctxCanvas.roundRect(-62, -42, 32, 12, 4);
-                    ctxCanvas.fill();
-
-                    // Guiador e farol frontal de estrada
-                    ctxCanvas.fillStyle = '#374151';
-                    ctxCanvas.beginPath();
-                    ctxCanvas.roundRect(50, -32, 12, 20, 3);
-                    ctxCanvas.fill();
-
-                    drawRoadWheel(-75, 38, 30, wheelRotationAngle);
-                    drawRoadWheel(75, 38, 30, wheelRotationAngle);
-
-                } else {
-                    // Chassi tubular reforçado
-                    ctxCanvas.strokeStyle = '#cbd5e1';
-                    ctxCanvas.lineWidth = 6;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(-50, 15);
-                    ctxCanvas.lineTo(-15, -28);
-                    ctxCanvas.lineTo(30, -22);
-                    ctxCanvas.lineTo(55, 22);
-                    ctxCanvas.stroke();
-
-                    // Suspensão invertida dourada
-                    ctxCanvas.strokeStyle = '#eab308';
-                    ctxCanvas.lineWidth = 4;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(45, -22);
-                    ctxCanvas.lineTo(62, 20);
-                    ctxCanvas.stroke();
-
-                    // Motor Franco Morini G30
-                    ctxCanvas.fillStyle = '#0f172a';
-                    ctxCanvas.strokeStyle = '#64748b';
-                    ctxCanvas.lineWidth = 2;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.roundRect(-22, 5, 44, 34, 6);
-                    ctxCanvas.fill();
-                    ctxCanvas.stroke();
-
-                    // Carenagens azuis e banco amarelo
-                    ctxCanvas.fillStyle = '#1d4ed8';
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(-55, -20);
-                    ctxCanvas.lineTo(-20, -48);
-                    ctxCanvas.lineTo(45, -42);
-                    ctxCanvas.lineTo(58, -10);
-                    ctxCanvas.closePath();
-                    ctxCanvas.fill();
-                    ctxCanvas.strokeStyle = '#3b82f6';
-                    ctxCanvas.lineWidth = 2;
-                    ctxCanvas.stroke();
-
-                    ctxCanvas.fillStyle = '#eab308';
-                    ctxCanvas.beginPath();
-                    ctxCanvas.roundRect(-58, -50, 72, 12, [8, 14, 4, 4]);
-                    ctxCanvas.fill();
-
-                    ctxCanvas.fillStyle = '#eab308';
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(45, -42);
-                    ctxCanvas.lineTo(75, -30);
-                    ctxCanvas.lineTo(62, 0);
-                    ctxCanvas.closePath();
-                    ctxCanvas.fill();
-
-                    ctxCanvas.fillStyle = '#ffffff';
-                    ctxCanvas.fillRect(58, -20, 10, 10);
-
-                    drawSpokeWheel(-78, 38, 32, wheelRotationAngle);
-                    drawSpokeWheel(78, 38, 32, wheelRotationAngle);
-                }
-
-                ctxCanvas.restore();
-            }
-
-            function drawSpokeWheel(x, y, radius, rotAngle) {
-                ctxCanvas.save();
-                ctxCanvas.translate(x, y);
-                ctxCanvas.fillStyle = '#090d16';
-                ctxCanvas.beginPath();
-                ctxCanvas.arc(0, 0, radius, 0, Math.PI * 2);
-                ctxCanvas.fill();
-                ctxCanvas.strokeStyle = '#334155';
-                ctxCanvas.lineWidth = 5;
-                ctxCanvas.stroke();
-
-                ctxCanvas.rotate(rotAngle);
-                ctxCanvas.strokeStyle = '#cbd5e1';
-                ctxCanvas.lineWidth = 1;
-                for (let i = 0; i < 12; i++) {
-                    const angle = (i * Math.PI * 2) / 12;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(0, 0);
-                    ctxCanvas.lineTo(Math.cos(angle) * (radius - 5), Math.sin(angle) * (radius - 5));
-                    ctxCanvas.stroke();
-                }
-                ctxCanvas.restore();
-            }
-
-            function drawRoadWheel(x, y, radius, rotAngle) {
-                ctxCanvas.save();
-                ctxCanvas.translate(x, y);
-                ctxCanvas.fillStyle = '#090d16';
-                ctxCanvas.beginPath();
-                ctxCanvas.arc(0, 0, radius, 0, Math.PI * 2);
-                ctxCanvas.fill();
-                ctxCanvas.strokeStyle = '#1e293b';
-                ctxCanvas.lineWidth = 6;
-                ctxCanvas.stroke();
-
-                ctxCanvas.rotate(rotAngle);
-                ctxCanvas.strokeStyle = '#64748b';
-                ctxCanvas.lineWidth = 4;
-                for (let i = 0; i < 3; i++) {
-                    const angle = (i * Math.PI * 2) / 3;
-                    ctxCanvas.beginPath();
-                    ctxCanvas.moveTo(0, 0);
-                    ctxCanvas.lineTo(Math.cos(angle) * (radius - 4), Math.sin(angle) * (radius - 4));
-                    ctxCanvas.stroke();
-                }
-                ctxCanvas.restore();
-            }
-
-            function initAudio() {
-                if (!audioCtx) {
-                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                    audioCtx = new AudioContextClass();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                if (!oscMain && audioCtx) {
-                    oscMain = audioCtx.createOscillator();
-                    oscMain.type = 'sawtooth';
-
-                    oscHarmonic = audioCtx.createOscillator();
-                    oscHarmonic.type = 'triangle';
-
-                    filterNode = audioCtx.createBiquadFilter();
-                    filterNode.type = 'lowpass';
-                    filterNode.frequency.setValueAtTime(1400, audioCtx.currentTime);
-                    filterNode.Q.setValueAtTime(4.0, audioCtx.currentTime);
-
-                    masterGain = audioCtx.createGain();
-                    masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-
-                    oscMain.connect(filterNode);
-                    oscHarmonic.connect(filterNode);
-                    filterNode.connect(masterGain);
-                    masterGain.connect(audioCtx.destination);
-
-                    oscMain.start();
-                    oscHarmonic.start();
-                }
-            }
-
-            function updateAudio(rpm, throttle) {
-                if (!audioEnabled || !audioCtx || !oscMain || !masterGain || isStalled) {
-                    if (masterGain && audioCtx) masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-                    return;
-                }
-                
-                const baseFreq = Math.max(40, (rpm / 30));
-                oscMain.frequency.setTargetAtTime(baseFreq, audioCtx.currentTime, 0.02);
-                oscHarmonic.frequency.setTargetAtTime(baseFreq * 2, audioCtx.currentTime, 0.02);
-                
-                const targetFilterFreq = 600 + (rpm / 15000) * 3200 + (throttle / 100) * 1500;
-                filterNode.frequency.setTargetAtTime(targetFilterFreq, audioCtx.currentTime, 0.03);
-
-                let volume = (throttle > 5 || rpm > 1600) ? (0.02 + (throttle / 100) * 0.14 + (rpm / 15000) * 0.08) : 0;
-                if (!audioEnabled) volume = 0;
-                masterGain.gain.setTargetAtTime(volume, audioCtx.currentTime, 0.03);
-            }
-
-            function simulationLoop() {
-                const throttle = throttleSlider ? parseInt(throttleSlider.value) : 0;
-                const perf = calculatePerformance();
-                const MAX_RPM_LIMIT = 14500;
-
-                let targetRpm = 1400;
-
-                if (isStalled) {
-                    targetRpm = 0;
-                    currentRpm = 0;
-                    currentSpeed *= 0.90;
-                    if (currentSpeed < 0.2) currentSpeed = 0;
-                    if (stallWarning) stallWarning.classList.remove('hidden');
-                } else {
-                    if (stallWarning) stallWarning.classList.add('hidden');
-
-                    if (currentGear === 0 || isClutchPulled) {
-                        targetRpm = 1400 + (throttle / 100) * (perf.peakRpm + 1000 - 1400);
-                        currentSpeed *= 0.94;
-                        if (currentSpeed < 0.2) currentSpeed = 0;
-                    } else {
-                        let frontTeeth = frontSprocketInput ? parseInt(frontSprocketInput.value) || 14 : 14;
-                        let rearTeeth = rearSprocketInput ? parseInt(rearSprocketInput.value) || 48 : 48;
-                        const secondaryRatio = rearTeeth / frontTeeth;
-                        const totalRatio = moriniPrimaryRatio * moriniGearRatios[currentGear] * secondaryRatio;
-
-                        let maxSpeedThisGear = (perf.peakRpm * perf.tireCircumferenceMeters * 60) / (totalRatio * 1000) * 1.15;
-                        let targetSpeedForThrottle = (throttle / 100) * maxSpeedThisGear;
-
-                        // Permite acelerar diretamente em qualquer mudança (1ª, 2ª, 3ª, 4ª, 5ª ou 6ª)
-                        if (currentSpeed < targetSpeedForThrottle) {
-                            let accelerationFactor = 0.035 / (currentGear * 0.45);
-                            currentSpeed += (targetSpeedForThrottle - currentSpeed) * accelerationFactor;
-                        } else {
-                            currentSpeed -= (currentSpeed - targetSpeedForThrottle) * 0.04;
-                        }
-
-                        if (currentSpeed < 0) currentSpeed = 0;
-
-                        let calculatedRpm = (currentSpeed * totalRatio * 1000) / (perf.tireCircumferenceMeters * 60);
-                        targetRpm = Math.max(calculatedRpm, 1400 + (throttle / 100) * (MAX_RPM_LIMIT - 1400) * 0.2 + calculatedRpm * 0.8);
-                    }
-                }
-
-                if (!isStalled) {
-                    if (targetRpm > MAX_RPM_LIMIT) targetRpm = MAX_RPM_LIMIT;
-                    if (currentGear === 0 && targetRpm < 1400) targetRpm = 1400;
-
-                    let inertiaFactor = (targetRpm > currentRpm) ? 0.08 : 0.12;
-                    currentRpm += (targetRpm - currentRpm) * inertiaFactor;
-
-                    if (currentRpm > MAX_RPM_LIMIT) currentRpm = MAX_RPM_LIMIT;
-                    if (currentRpm < 1400) currentRpm = 1400;
-                }
-
-                const isPowerband = !isStalled && (currentRpm >= perf.powerbandStart) && (currentRpm <= perf.powerbandEnd) && (throttle > 25);
-
-                if (powerbandBadge) {
-                    if (isPowerband) {
-                        powerbandBadge.classList.add('powerband-active');
-                        powerbandBadge.textContent = '⚡ POWERBAND : ATIVA!';
-                    } else {
-                        powerbandBadge.classList.remove('powerband-active');
-                        powerbandBadge.textContent = '⚡ POWERBAND : OFF';
-                    }
-                }
-
-                if (isPowerband && (currentGear === 1 || currentGear === 2) && throttle > 75 && !perf.isStock && !isStalled) {
-                    const targetWheelie = (currentGear === 1) ? 22 : 8;
-                    wheelieAngle += (targetWheelie - wheelieAngle) * 0.1;
-                } else {
-                    wheelieAngle -= wheelieAngle * 0.12;
-                    if (wheelieAngle < 0) wheelieAngle = 0;
-                }
-
-                roadOffset += (currentSpeed * 0.45);
-
-                if (liveRpmDisplay) liveRpmDisplay.textContent = Math.round(currentRpm);
-                if (displayGearNum) displayGearNum.textContent = currentGear === 0 ? 'N' : currentGear;
-                if (displaySpeedNum) displaySpeedNum.textContent = `${currentSpeed.toFixed(1)} km/h`;
-                if (hudSpeed) hudSpeed.innerHTML = `${Math.round(currentSpeed)} <span class="text-xs font-normal text-slate-400">KM/H</span>`;
-                if (hudGear) hudGear.textContent = `MUDANÇA: ${currentGear === 0 ? 'NEUTRO' : currentGear + 'ª'} ${isClutchPulled ? '(EMBRAIAGEM)' : ''}`;
-                if (throttlePercentVal) throttlePercentVal.textContent = `${throttle}%`;
-
-                const clampedRpm = Math.min(Math.max(currentRpm, 0), 15000);
-                const needleAngle = -135 + ((clampedRpm / 15000) * 270);
-                if (gaugeNeedle) gaugeNeedle.style.transform = `rotate(${needleAngle}deg)`;
-
-                if (audioEnabled && !isStalled) {
-                    initAudio();
-                    updateAudio(currentRpm, throttle);
-                } else if (masterGain && audioCtx) {
-                    masterGain.gain.setValueAtTime(0, audioCtx.currentTime, 0.05);
-                }
-
-                drawBikeScene();
-                requestAnimationFrame(simulationLoop);
-            }
-
-            [kitSelect, crankshaftSelect, squishInput, exhaustDegInput, carbSelect, exhaustSelect, ignitionSelect, reedsSelect, ignitionTimingInput, frontSprocketInput, rearSprocketInput].forEach(el => {
-                if (el) {
-                    el.addEventListener('input', updateDynoUI);
-                    el.addEventListener('change', updateDynoUI);
-                }
-            });
-
-            if (btnReset) {
-                btnReset.addEventListener('click', () => {
-                    if (kitSelect) kitSelect.value = "50";
-                    if (crankshaftSelect) crankshaftSelect.value = "stock";
-                    if (squishInput) squishInput.value = 1.10;
-                    if (exhaustDegInput) exhaustDegInput.value = 168;
-                    if (carbSelect) carbSelect.value = "17.5";
-                    if (exhaustSelect) exhaustSelect.value = "stock";
-                    if (ignitionSelect) ignitionSelect.value = "stock";
-                    if (reedsSelect) reedsSelect.value = "stock";
-                    if (ignitionTimingInput) ignitionTimingInput.value = 18;
-                    if (frontSprocketInput) frontSprocketInput.value = 14;
-                    if (rearSprocketInput) rearSprocketInput.value = 48;
-                    if (throttleSlider) throttleSlider.value = 0;
-                    currentGear = 0;
-                    isStalled = false;
-                    isClutchPulled = false;
-                    updateDynoUI();
-                });
-            }
-
-            if (btnSelectWolf) {
-                btnSelectWolf.addEventListener('click', () => {
-                    bikeType = 'wolf';
-                    btnSelectWolf.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg bg-orange-600 text-white shadow";
-                    if (btnSelectRmx) btnSelectRmx.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg text-slate-400 hover:text-white";
-                    updateDynoUI();
-                });
-            }
-
-            if (btnSelectRmx) {
-                btnSelectRmx.addEventListener('click', () => {
-                    bikeType = 'rmx';
-                    btnSelectRmx.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg bg-yellow-500 text-slate-950 shadow";
-                    if (btnSelectWolf) btnSelectWolf.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg text-slate-400 hover:text-white";
-                    updateDynoUI();
-                });
-            }
-
-            if (btnClutch) {
-                btnClutch.addEventListener('mousedown', () => { isClutchPulled = true; if(clutchStatusText) clutchStatusText.textContent = "Puxada"; btnClutch.classList.add('bg-amber-600', 'text-white'); });
-                btnClutch.addEventListener('mouseup', () => { isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; btnClutch.classList.remove('bg-amber-600', 'text-white'); });
-                btnClutch.addEventListener('mouseleave', () => { isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; btnClutch.classList.remove('bg-amber-600', 'text-white'); });
-                btnClutch.addEventListener('touchstart', (e) => { e.preventDefault(); isClutchPulled = true; if(clutchStatusText) clutchStatusText.textContent = "Puxada"; });
-                btnClutch.addEventListener('touchend', (e) => { e.preventDefault(); isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; });
-            }
-
-            if (btnGearUp) btnGearUp.addEventListener('click', () => { if (currentGear < 6) currentGear++; if(isStalled) isStalled = false; });
-            if (btnGearDown) btnGearDown.addEventListener('click', () => { if (currentGear > 0) currentGear--; if(isStalled) isStalled = false; });
-
-            function setThrottle(val) { if (throttleSlider) throttleSlider.value = val; }
-
-            if (btnThrottle) {
-                btnThrottle.addEventListener('mousedown', () => setThrottle(100));
-                btnThrottle.addEventListener('mouseup', () => setThrottle(0));
-                btnThrottle.addEventListener('mouseleave', () => setThrottle(0));
-                btnThrottle.addEventListener('touchstart', (e) => { e.preventDefault(); setThrottle(100); });
-                btnThrottle.addEventListener('touchend', (e) => { e.preventDefault(); setThrottle(0); });
-            }
-
-            window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && !isSpacePressed) {
-                    isSpacePressed = true;
-                    setThrottle(100);
-                }
-                if (e.code === 'KeyS' || e.key === 'Shift') { if (currentGear < 6) currentGear++; if(isStalled) isStalled = false; }
-                if (e.code === 'KeyA' || e.key === 'Control') { if (currentGear > 0) currentGear--; if(isStalled) isStalled = false; }
-                if (e.code === 'KeyC') { isClutchPulled = true; if(clutchStatusText) clutchStatusText.textContent = "Puxada"; }
-            });
-
-            window.addEventListener('keyup', (e) => {
-                if (e.code === 'Space') {
-                    isSpacePressed = false;
-                    setThrottle(0);
-                }
-                if (e.code === 'KeyC') { isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; }
-            });
-
-            if (btnAudioToggle) {
-                btnAudioToggle.addEventListener('click', () => {
-                    audioEnabled = !audioEnabled;
-                    if (audioStatus) {
-                        audioStatus.textContent = audioEnabled ? 'Ativado' : 'Desativado';
-                        audioStatus.className = audioEnabled ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold';
-                    }
-                    if (!audioEnabled && masterGain) masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-                });
-            }
-
-            window.addEventListener('resize', resizeCanvas);
-
-            resizeCanvas();
-            updateDynoUI();
-            simulationLoop();
-        });
-    </script>
-        </body>
+<!-- CABEÇALHO DA APLICAÇÃO -->
+<header class="max-w-7xl mx-auto w-full mb-3 border-b border-slate-800 pb-3 flex flex-col md:flex-row justify-between items-center gap-3">
+<div class="flex items-center gap-3">
+<div class="p-2.5 bg-gradient-to-br from-orange-600 to-amber-600 border border-orange-400/30 rounded-xl text-white text-xl shadow-lg shadow-orange-950/40">
+<i class="fa-solid fa-motorcycle"></i>
+</div>
+<div>
+<h1 class="text-xl md:text-2xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-500">
+SUZUKI WOLF 50 / RMX 50 SIMULATOR
+</h1>
+<p class="text-xs text-slate-400">Franco Morini G30 Engine Dyno & Real Physics (Anti-Stall & Clutch)</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div id="stallWarning" class="hidden px-3 py-1 rounded-lg bg-yellow-950/90 border border-yellow-600 text-yellow-400 text-xs font-bold font-mono animate-bounce flex items-center gap-2">
+<i class="fa-solid fa-triangle-exclamation"></i> MOTOR AFOGADO / GOSTO! (SOLTE A EMBRAIAGEM)
+</div>
+<div id="detonationWarning" class="hidden px-3 py-1 rounded-lg bg-red-950/90 border border-red-600 text-red-400 text-xs font-bold font-mono animate-bounce flex items-center gap-2">
+<i class="fa-solid fa-triangle-exclamation"></i> RISCO DE DETONAÇÃO (SQUISH)
+</div>
+<button id="btnAudioToggle" class="bg-slate-900 border border-slate-800 hover:border-orange-500/50 px-3 py-1.5 rounded-xl text-xs font-mono text-slate-300 flex items-center gap-2">
+<i class="fa-solid fa-volume-high text-orange-400"></i> Som 2T: <span id="audioStatus" class="text-emerald-400 font-bold">Ativado</span>
+</button>
+</div>
+</header>
+<!-- CONTEÚDO PRINCIPAL -->
+<main class="max-w-7xl mx-auto w-full space-y-4">
+<!-- PARTE 1: DYNO & AFINAÇÃO DO MOTOR MORINI G30 -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+<!-- Painel de Controlo do Motor -->
+<div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3">
+<div class="flex justify-between items-center border-b border-slate-800 pb-2">
+<h2 class="text-sm font-bold font-orbitron text-orange-400 flex items-center gap-2">
+<i class="fa-solid fa-sliders"></i> Afinação Franco Morini G30
+</h2>
+<button id="btnReset" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700">
+<i class="fa-solid fa-rotate-left"></i> Reset (Origem)
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+<!-- Cilindro / Kit -->
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
+<label for="kitSelect" class="font-semibold text-slate-300 block">Cilindro / Kit 2T:</label>
+<select id="kitSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
+<option value="50" selected>Morini Original (Ø41.0mm - 50cc)</option>
+<option value="athena74">Athena 74cc Alumínio (Ø47.0mm)</option>
+<option value="airsal74">Airsal 74cc Alumínio (Ø48.0mm)</option>
+<option value="barikit80">Barikit 80cc Alumínio (Ø48.0mm / Race)</option>
+</select>
+</div>
+<!-- Cambota / Curso -->
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
+<label for="crankshaftSelect" class="font-semibold text-slate-300 block">Cambota / Curso:</label>
+<select id="crankshaftSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
+<option value="stock" selected>Origem (Curso 39.0mm)</option>
+<option value="racing">Racing Reforçada (Biela Polida)</option>
+<option value="longstroke">Curso Longo (Curso 42.0mm)</option>
+</select>
+</div>
+<!-- Carburador -->
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
+<label for="carbSelect" class="font-semibold text-slate-300 block">Carburador:</label>
+<select id="carbSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
+<option value="17.5" selected>17.5mm DellOrto PHBN</option>
+<option value="19_mikuni">19mm Mikuni VM (Japonês Clássico)</option>
+<option value="19">19mm DellOrto PHBG</option>
+<option value="21">21mm DellOrto Black Edition</option>
+<option value="24">24mm OKO / PWK Flat-slide</option>
+<option value="26">26mm Stage6 R/T PWK</option>
+<option value="28">28mm Keihin / Stage6 PWK Race</option>
+<option value="30">30mm Koso Mega Power</option>
+</select>
+</div>
+<!-- Escape -->
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
+<label for="exhaustSelect" class="font-semibold text-slate-300 block">Escape de Expansão:</label>
+<select id="exhaustSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
+<option value="stock" selected>Escape Original Estrangulado</option>
+<option value="proma">Proma / Turbokit 50cc</option>
+<option value="macra">Macra Clássico 50/75cc (Ressonância Tradicional)</option>
+<option value="voca">VOCA Rookie 50/70</option>
+<option value="yasuni">Yasuni R3 Carrera</option>
+<option value="custom">Feito Sob Medida / Artesanal Race</option>
+</select>
+</div>
+<!-- Ignição / Rotor -->
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
+<label for="ignitionSelect" class="font-semibold text-slate-300 block">Sistema de Ignição (Rotor):</label>
+<select id="ignitionSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
+<option value="stock" selected>Rotor Normal de Origem (Pesado c/ Luz)</option>
+<option value="stock_lightened">Rotor Original Aliviado / Trabalhado (c/ Luz)</option>
+<option value="hpi">Rotor Aliviado HPI (Analógico / Avanço Fixo)</option>
+<option value="selettra">Selettra / PVL Rotor Interno (Variável)</option>
+</select>
+</div>
+<!-- Lamelas de Admissão -->
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-1">
+<label for="reedsSelect" class="font-semibold text-slate-300 block">Lamelas (Caixa de Admissão):</label>
+<select id="reedsSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:ring-1 focus:ring-orange-500">
+<option value="stock" selected>Lamelas de Origem (Fibra grossa)</option>
+<option value="fiber030">Lamelas Fibra de Vidro 0.30mm (Flexíveis)</option>
+<option value="carbon035">Lamelas Carbono Barikit 0.35mm (Performance)</option>
+</select>
+</div>
+</div>
+<!-- Sliders Técnicos -->
+<div class="space-y-2">
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl">
+<div class="flex justify-between text-xs mb-1">
+<label for="ignitionTimingInput" class="font-semibold text-slate-300">Avanço de Ignição / Ponto do Rotor:</label>
+<span id="ignitionTimingVal" class="font-mono font-bold text-orange-400">18° (BTDC)</span>
+</div>
+<input type="range" id="ignitionTimingInput" min="8" max="30" step="1" value="18" class="w-full">
+</div>
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl">
+<div class="flex justify-between text-xs mb-1">
+<label for="squishInput" class="font-semibold text-slate-300">Medida de Squish:</label>
+<span id="squishVal" class="font-mono font-bold text-orange-400">1.10 mm</span>
+</div>
+<input type="range" id="squishInput" min="0.50" max="1.50" step="0.05" value="1.10" class="w-full">
+</div>
+<div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl">
+<div class="flex justify-between text-xs mb-1">
+<label for="exhaustDegInput" class="font-semibold text-slate-300">Diagrama de Escape (°):</label>
+<span id="exhaustDegVal" class="font-mono font-bold text-orange-400">168°</span>
+</div>
+<input type="range" id="exhaustDegInput" min="165" max="205" step="1" value="168" class="w-full">
+</div>
+</div>
+<!-- Transmissão Personalizada (Pinhão & Cremalheira) -->
+<div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl space-y-2.5 text-xs">
+<div class="flex justify-between items-center">
+<span class="font-semibold text-slate-300">Transmissão Secundária (Personalizada):</span>
+<span id="ratioDisplayVal" class="font-mono font-bold text-orange-400">Relação: 3.43 : 1</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label for="frontSprocketInput" class="text-[10px] text-slate-400 block mb-1">Pinhão de Ataque:</label>
+<input type="number" id="frontSprocketInput" min="9" max="18" value="14" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 text-center font-mono focus:ring-1 focus:ring-orange-500">
+</div>
+<div>
+<label for="rearSprocketInput" class="text-[10px] text-slate-400 block mb-1">Cremalheira (Coroa):</label>
+<input type="number" id="rearSprocketInput" min="35" max="65" value="48" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 text-center font-mono focus:ring-1 focus:ring-orange-500">
+</div>
+</div>
+</div>
+</div>
+<!-- Gráfico Dyno -->
+<div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+<div class="flex justify-between items-center mb-2">
+<div>
+<h2 class="text-sm font-bold font-orbitron text-slate-100 flex items-center gap-2">
+<i class="fa-solid fa-chart-line text-orange-500"></i> Curva de Potência e Binário
+</h2>
+<p class="text-[11px] text-slate-400">Medição teórica realista no banco de ensaio (Dyno Run)</p>
+</div>
+<div class="flex gap-2.5">
+<div class="text-right font-mono bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
+<div class="text-[9px] text-slate-400 uppercase">Motor (Crank)</div>
+<div class="text-base font-black text-orange-400" id="peakPowerCrankDisplay">-- cv</div>
+</div>
+<div class="text-right font-mono bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
+<div class="text-[9px] text-slate-400 uppercase">À Roda (Wheel)</div>
+<div class="text-base font-black text-emerald-400" id="peakPowerWheelDisplay">-- cv</div>
+</div>
+</div>
+</div>
+<div class="relative w-full h-[210px] bg-slate-950/80 p-2 rounded-xl border border-slate-800">
+<canvas id="dynoChart"></canvas>
+</div>
+<div class="grid grid-cols-4 gap-2 mt-3 text-center font-mono">
+<div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase">Binário Máx.</span>
+<span id="maxTorqueVal" class="text-xs font-bold text-blue-400">-- Nm</span>
+</div>
+<div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase">Pico RPM</span>
+<span id="peakRpmVal" class="text-xs font-bold text-amber-400">-- RPM</span>
+</div>
+<div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase">Taxa Comp.</span>
+<span id="compRatioVal" class="text-xs font-bold text-emerald-400">-- : 1</span>
+</div>
+<div class="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase">Velocidade Téorica</span>
+<span id="topSpeedVal" class="text-xs font-bold text-purple-400">-- km/h</span>
+</div>
+</div>
+</div>
+</section>
+<!-- PARTE 2: SIMULADOR DE CONDUÇÃO E ANIMAÇÃO DA MOTA -->
+<section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-2xl flex flex-col gap-4">
+<div class="flex flex-col md:flex-row justify-between items-center gap-3 border-b border-slate-800 pb-3">
+<div class="flex items-center gap-3">
+<h2 class="text-base font-bold font-orbitron text-orange-400 flex items-center gap-2">
+<i class="fa-solid fa-road"></i> Simulador de Estrada em Tempo Real
+</h2>
+<div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+<button id="btnSelectWolf" class="px-3 py-1 text-xs font-bold font-orbitron rounded-lg bg-orange-600 text-white shadow">
+SUZUKI WOLF
+</button>
+<button id="btnSelectRmx" class="px-3 py-1 text-xs font-bold font-orbitron rounded-lg text-slate-400 hover:text-white">
+SUZUKI RMX
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button id="btnClutch" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-xs font-bold font-orbitron text-amber-400 flex items-center gap-2 shadow transition-all">
+<i class="fa-solid fa-hand"></i> Puxar Embraiagem (<span id="clutchStatusText">Solta</span>)
+</button>
+<div id="powerbandBadge" class="px-4 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-500 font-orbitron text-xs font-bold transition-all">
+⚡ POWERBAND : OFF
+</div>
+</div>
+</div>
+<!-- ECRÃ CANVAS 2D -->
+<div class="relative w-full h-[230px] bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-inner flex items-center justify-center">
+<canvas id="bikeCanvas" class="w-full h-full block"></canvas>
+<div class="absolute top-3 left-4 font-orbitron">
+<div class="text-3xl font-black text-slate-100" id="hudSpeed">0 <span class="text-xs font-normal text-slate-400">KM/H</span></div>
+<div class="text-xs font-bold text-orange-400" id="hudGear">MUDANÇA: NEUTRO</div>
+</div>
+</div>
+<!-- PAINEL DE CONDUÇÃO -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+<div class="md:col-span-5 flex items-center justify-around bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
+<!-- Tacómetro Analógico -->
+<div class="gauge-container flex items-center justify-center shrink-0 scale-90">
+<div id="gaugePowerbandArc" class="powerband-arc"></div>
+<div class="gauge-face-cover"></div>
+<div id="gaugeNeedle" class="needle"></div>
+<div class="gauge-center"></div>
+<div class="absolute bottom-5 text-center font-orbitron z-10">
+<span id="liveRpmDisplay" class="text-base font-bold text-orange-400 block">1400</span>
+<span class="text-[7px] text-slate-400 tracking-widest uppercase">RPM x1000</span>
+</div>
+</div>
+<div class="space-y-2 text-center font-mono">
+<div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
+<span class="text-[9px] text-slate-400 block uppercase">Mudança</span>
+<span id="displayGearNum" class="text-2xl font-black text-orange-400 font-orbitron">N</span>
+</div>
+<div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
+<span class="text-[9px] text-slate-400 block uppercase">Velocidade</span>
+<span id="displaySpeedNum" class="text-lg font-bold text-emerald-400">0.0 km/h</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-7 flex flex-col justify-between gap-3">
+<div class="flex items-center gap-2">
+<button id="btnGearDown" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold font-orbitron rounded-xl border border-slate-700 shadow flex items-center justify-center gap-2">
+<i class="fa-solid fa-chevron-down text-orange-400"></i> REDUZIR (A)
+</button>
+<button id="btnGearUp" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-bold font-orbitron rounded-xl border border-slate-700 shadow flex items-center justify-center gap-2">
+<i class="fa-solid fa-chevron-up text-orange-400"></i> SUBIR (S)
+</button>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-mono text-slate-400">
+<span>ACELERADOR (Rato / Toque / ESPAÇO)</span>
+<span id="throttlePercentVal" class="text-emerald-400 font-bold">0%</span>
+</div>
+<input type="range" id="throttleSlider" min="0" max="100" value="0" class="w-full h-3">
+</div>
+<button id="btnThrottle" class="w-full py-4 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 active:scale-[0.98] text-white font-black font-orbitron tracking-wider text-sm md:text-base rounded-xl shadow-lg shadow-orange-950/50 border border-orange-400/30 flex items-center justify-center gap-2 cursor-pointer select-none">
+<i class="fa-solid fa-gauge"></i> PUXAR ACELERADOR A FUNDO
+</button>
+</div>
+</div>
+</section>
+<!-- PARTE 3: GERADOR E PROJETOR DE ESCAPES DE EXPANSÃO 2T -->
+<section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-2xl flex flex-col gap-4">
+<div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+<div>
+<h2 class="text-base font-bold font-orbitron text-amber-400 flex items-center gap-2">
+<i class="fa-solid fa-volcano"></i> Calculador & Projetor de Escapes de Expansão (Chamber Designer)
+</h2>
+<p class="text-xs text-slate-400">Projeto de medidas dos cones (Coletor, Difusor, Barriga, Contra-cone e Agulha/Silenciador)</p>
+</div>
+<div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 font-mono text-xs text-amber-400">
+Velocidade do Som no Escape (Vs): <span class="font-bold">520 m/s</span>
+</div>
+</div>
+<!-- ESQUEMA VISUAL DO ESCAPE -->
+<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col items-center justify-center overflow-x-auto">
+<svg id="exhaustSvg" viewBox="0 0 800 160" class="w-full max-w-3xl h-auto">
+<!-- Fundo / Linha Central -->
+<line x1="20" y1="80" x2="780" y2="80" stroke="#334155" stroke-dasharray="4,4" stroke-width="1"/>
+<!-- Coletor (Header Pipe) -->
+<polygon id="svgHeader" points="40,68 180,65 180,95 40,92" fill="rgba(249, 115, 22, 0.25)" stroke="#f97316" stroke-width="2"/>
+<text x="110" y="84" fill="#f97316" font-size="10" font-family="Orbitron" text-anchor="middle">Coletor</text>
+<!-- Difusor (Divergent Cone) -->
+<polygon id="svgDiffuser" points="180,65 420,40 420,120 180,95" fill="rgba(59, 130, 246, 0.25)" stroke="#3b82f6" stroke-width="2"/>
+<text x="300" y="84" fill="#3b82f6" font-size="10" font-family="Orbitron" text-anchor="middle">Difusor</text>
+<!-- Corpo / Barriga (Belly) -->
+<polygon id="svgBelly" points="420,40 520,40 520,120 420,120" fill="rgba(234, 179, 8, 0.25)" stroke="#eab308" stroke-width="2"/>
+<text x="470" y="84" fill="#eab308" font-size="10" font-family="Orbitron" text-anchor="middle">Barriga</text>
+<!-- Contra-cone (Convergent Cone) -->
+<polygon id="svgBaffle" points="520,40 680,68 680,92 520,120" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" stroke-width="2"/>
+<text x="600" y="84" fill="#ef4444" font-size="10" font-family="Orbitron" text-anchor="middle">Contra-cone</text>
+<!-- Tubo da Ponteira / Silenciador (Stinger) -->
+<polygon id="svgStinger" points="680,68 760,68 760,92 680,92" fill="rgba(16, 185, 129, 0.25)" stroke="#10b981" stroke-width="2"/>
+<text x="720" y="84" fill="#10b981" font-size="9" font-family="Orbitron" text-anchor="middle">Ponteira</text>
+</svg>
+</div>
+<!-- TABELA DE MEDIDAS CALCULADAS -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 font-mono text-center">
+<div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase font-orbitron">Diâmetro do Coletor</span>
+<span id="exHeaderDia" class="text-sm font-bold text-orange-400">-- mm</span>
+</div>
+<div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase font-orbitron">Diâmetro da Barriga</span>
+<span id="exBellyDia" class="text-sm font-bold text-yellow-400">-- mm</span>
+</div>
+<div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase font-orbitron">Diâmetro da Ponteira</span>
+<span id="exStingerDia" class="text-sm font-bold text-emerald-400">-- mm</span>
+</div>
+<div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase font-orbitron">Comprimento Coletor</span>
+<span id="exHeaderLen" class="text-sm font-bold text-slate-200">-- mm</span>
+</div>
+<div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase font-orbitron">Comprimento Difusor</span>
+<span id="exDiffuserLen" class="text-sm font-bold text-blue-400">-- mm</span>
+</div>
+<div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+<span class="text-[9px] text-slate-400 block uppercase font-orbitron">Comprimento Total (L)</span>
+<span id="exTotalLen" class="text-sm font-bold text-purple-400">-- mm</span>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER -->
+<footer class="max-w-7xl mx-auto w-full text-center text-xs text-slate-500 py-3 border-t border-slate-800/80">
+Simulador Realista com Embraiagem e Anti-Stall — Suzuki Wolf 50 & Suzuki RMX 50 (Franco Morini G30).
+</footer>
+<!-- LÓGICA E FÍSICA JAVASCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const kitSelect = document.getElementById('kitSelect');
+const crankshaftSelect = document.getElementById('crankshaftSelect');
+const squishInput = document.getElementById('squishInput');
+const squishVal = document.getElementById('squishVal');
+const exhaustDegInput = document.getElementById('exhaustDegInput');
+const exhaustDegVal = document.getElementById('exhaustDegVal');
+const carbSelect = document.getElementById('carbSelect');
+const exhaustSelect = document.getElementById('exhaustSelect');
+const ignitionSelect = document.getElementById('ignitionSelect');
+const reedsSelect = document.getElementById('reedsSelect');
+const ignitionTimingInput = document.getElementById('ignitionTimingInput');
+const ignitionTimingVal = document.getElementById('ignitionTimingVal');
+const frontSprocketInput = document.getElementById('frontSprocketInput');
+const rearSprocketInput = document.getElementById('rearSprocketInput');
+const ratioDisplayVal = document.getElementById('ratioDisplayVal');
+const btnReset = document.getElementById('btnReset');
+const peakPowerCrankDisplay = document.getElementById('peakPowerCrankDisplay');
+const peakPowerWheelDisplay = document.getElementById('peakPowerWheelDisplay');
+const maxTorqueVal = document.getElementById('maxTorqueVal');
+const peakRpmVal = document.getElementById('peakRpmVal');
+const compRatioVal = document.getElementById('compRatioVal');
+const topSpeedVal = document.getElementById('topSpeedVal');
+const detonationWarning = document.getElementById('detonationWarning');
+const stallWarning = document.getElementById('stallWarning');
+const btnSelectWolf = document.getElementById('btnSelectWolf');
+const btnSelectRmx = document.getElementById('btnSelectRmx');
+const btnClutch = document.getElementById('btnClutch');
+const clutchStatusText = document.getElementById('clutchStatusText');
+const powerbandBadge = document.getElementById('powerbandBadge');
+const bikeCanvas = document.getElementById('bikeCanvas');
+const ctxCanvas = bikeCanvas.getContext('2d');
+const gaugeNeedle = document.getElementById('gaugeNeedle');
+const gaugePowerbandArc = document.getElementById('gaugePowerbandArc');
+const liveRpmDisplay = document.getElementById('liveRpmDisplay');
+const displayGearNum = document.getElementById('displayGearNum');
+const displaySpeedNum = document.getElementById('displaySpeedNum');
+const hudSpeed = document.getElementById('hudSpeed');
+const hudGear = document.getElementById('hudGear');
+const btnGearDown = document.getElementById('btnGearDown');
+const btnGearUp = document.getElementById('btnGearUp');
+const throttleSlider = document.getElementById('throttleSlider');
+const throttlePercentVal = document.getElementById('throttlePercentVal');
+const btnThrottle = document.getElementById('btnThrottle');
+const btnAudioToggle = document.getElementById('btnAudioToggle');
+const audioStatus = document.getElementById('audioStatus');
+// Elementos de Cálculo do Escape
+const exHeaderDia = document.getElementById('exHeaderDia');
+const exBellyDia = document.getElementById('exBellyDia');
+const exStingerDia = document.getElementById('exStingerDia');
+const exHeaderLen = document.getElementById('exHeaderLen');
+const exDiffuserLen = document.getElementById('exDiffuserLen');
+const exTotalLen = document.getElementById('exTotalLen');
+let bikeType = 'wolf';
+let currentGear = 0;
+let isClutchPulled = false;
+let isStalled = false;
+const moriniPrimaryRatio = 3.842;
+const moriniGearRatios = [0, 3.166, 2.000, 1.500, 1.217, 1.041, 0.923];
+let currentRpm = 1400;
+let currentSpeed = 0;
+let wheelieAngle = 0;
+let roadOffset = 0;
+let wheelRotationAngle = 0;
+let audioEnabled = true;
+let audioCtx = null;
+let oscMain = null;
+let oscHarmonic = null;
+let masterGain = null;
+let filterNode = null;
+let isSpacePressed = false;
+const ctxChart = document.getElementById('dynoChart').getContext('2d');
+const rpmRange = [];
+for (let r = 2000; r <= 15000; r += 250) rpmRange.push(r);
+const dynoChart = new Chart(ctxChart, {
+type: 'line',
+data: {
+labels: rpmRange,
+datasets: [
+{
+label: 'Potência Motor (cv)',
+data: [],
+borderColor: '#f97316',
+backgroundColor: 'rgba(249, 115, 22, 0.15)',
+borderWidth: 3,
+fill: true,
+tension: 0.28,
+yAxisID: 'y'
+},
+{
+label: 'Potência à Roda (cv)',
+data: [],
+borderColor: '#10b981',
+backgroundColor: 'transparent',
+borderWidth: 2,
+tension: 0.28,
+yAxisID: 'y'
+},
+{
+label: 'Binário (Nm)',
+data: [],
+borderColor: '#3b82f6',
+backgroundColor: 'transparent',
+borderWidth: 2,
+borderDash: [4, 4],
+tension: 0.28,
+yAxisID: 'y1'
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: false,
+interaction: { mode: 'index', intersect: false },
+scales: {
+x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { family: 'Orbitron', size: 8 } } },
+y: { type: 'linear', position: 'left', title: { display: true, text: 'Potência (cv)', color: '#f97316' }, grid: { color: '#1e293b' }, ticks: { color: '#f97316' }, min: 0, max: 18 },
+y1: { type: 'linear', position: 'right', title: { display: true, text: 'Binário (Nm)', color: '#3b82f6' }, grid: { drawOnChartArea: false }, ticks: { color: '#3b82f6' }, min: 0, max: 14 }
+},
+plugins: { legend: { labels: { color: '#cbd5e1', font: { family: 'Inter', size: 10 } } } }
+}
+});
+function calculateExhaustGeometry(targetRpm, exhaustDurationDeg, cc) {
+// Velocidade Média do Som nos gases de escape (m/s)
+const soundSpeed = 520;
+// Comprimento de Sintonização de Onda do Escape L (mm) - Fórmula Jennings
+const L = Math.round((exhaustDurationDeg * soundSpeed * 1000) / (targetRpm * 12));
+// Diâmetro do Coletor de Entrada (mm)
+const headerDia = Math.round(Math.sqrt(cc) * 3.8);
+// Diâmetro do Corpo / Barriga do Escape (mm)
+const bellyDia = Math.round(headerDia * 2.7);
+// Diâmetro do Tubo de Saída / Ponteira (Stinger) (mm)
+const stingerDia = Math.round(headerDia * 0.58);
+// Comprimentos dos trechos (mm)
+const headerLen = Math.round(L * 0.28);
+const diffuserLen = Math.round(L * 0.38);
+if (exHeaderDia) exHeaderDia.textContent = ⁠${headerDia} mm⁠;
+if (exBellyDia) exBellyDia.textContent = ⁠${bellyDia} mm⁠;
+if (exStingerDia) exStingerDia.textContent = ⁠${stingerDia} mm⁠;
+if (exHeaderLen) exHeaderLen.textContent = ⁠${headerLen} mm⁠;
+if (exDiffuserLen) exDiffuserLen.textContent = ⁠${diffuserLen} mm⁠;
+if (exTotalLen) exTotalLen.textContent = ⁠${L} mm⁠;
+}
+function calculatePerformance() {
+const kitVal = kitSelect ? kitSelect.value : '50';
+const crankshaft = crankshaftSelect ? crankshaftSelect.value : 'stock';
+const squish = squishInput ? parseFloat(squishInput.value) : 1.10;
+const exhaustDeg = exhaustDegInput ? parseInt(exhaustDegInput.value) : 168;
+const carbVal = carbSelect ? carbSelect.value : '17.5';
+const exhaust = exhaustSelect ? exhaustSelect.value : 'stock';
+const ignition = ignitionSelect ? ignitionSelect.value : 'stock';
+const reeds = reedsSelect ? reedsSelect.value : 'stock';
+const timingDeg = ignitionTimingInput ? parseInt(ignitionTimingInput.value) : 18;
+let frontTeeth = frontSprocketInput ? parseInt(frontSprocketInput.value) || 14 : 14;
+let rearTeeth = rearSprocketInput ? parseInt(rearSprocketInput.value) || 48 : 48;
+let isStock = (kitVal === '50' && crankshaft === 'stock' && carbVal === '17.5' && exhaust === 'stock' && ignition === 'stock' && reeds === 'stock' && squish === 1.10 && exhaustDeg === 168 && timingDeg === 18 && frontTeeth === 14 && rearTeeth === 48);
+let cc = 50;
+let baseHP = 4.8;
+if (kitVal === '50') { baseHP = 7.5; cc = 50; }
+else if (kitVal === 'airsal74') { baseHP = 11.0; cc = 74; }
+else if (kitVal === 'athena74') { baseHP = 12.8; cc = 74; }
+else if (kitVal === 'barikit80') { baseHP = 14.5; cc = 80; }
+let strokeMultiplier = 1.0;
+if (crankshaft === 'racing') strokeMultiplier = 1.02;
+if (crankshaft === 'longstroke') strokeMultiplier = 1.06;
+let carbSizeNumeric = 17.5;
+if (carbVal === '19_mikuni' || carbVal === '19') carbSizeNumeric = 19;
+else if (!isNaN(carbVal)) carbSizeNumeric = parseFloat(carbVal);
+else carbSizeNumeric = 24;
+let carbFactor = carbSizeNumeric / 24;
+let ignitionMultiplier = 1.0;
+let ignitionRpmBonus = 0;
+if (ignition === 'stock_lightened') {
+ignitionMultiplier = 1.02;
+ignitionRpmBonus = 200;
+} else if (ignition === 'hpi') {
+ignitionMultiplier = 1.04;
+ignitionRpmBonus = 400;
+} else if (ignition === 'selettra') {
+ignitionMultiplier = 1.08;
+ignitionRpmBonus = 900;
+}
+// Cálculo do Impacto do Avanço de Ignição (° BTDC)
+let timingFactor = 1.0 + ((timingDeg - 18) * 0.008);
+let timingDetonationRisk = timingDeg >= 24;
+let reedsMultiplier = 1.0;
+if (reeds === 'fiber030') reedsMultiplier = 1.02;
+if (reeds === 'carbon035') reedsMultiplier = 1.05;
+let squishFactor = 1.0;
+let squishDetonationRisk = false;
+if (squish >= 0.70 && squish <= 0.90) {
+squishFactor = 1.04;
+} else if (squish < 0.70) {
+squishFactor = 1.0;
+squishDetonationRisk = true;
+} else {
+squishFactor = 1.0 - ((squish - 0.90) * 0.10);
+}
+let detonationRisk = squishDetonationRisk || timingDetonationRisk;
+let targetPeakRpm = isStock ? 6200 : (8500 + ((exhaustDeg - 165) * 90) + ignitionRpmBonus - ((timingDeg - 18) * 25));
+let exhaustMultiplier = isStock ? 0.75 : 1.0;
+if (exhaust === 'proma') { targetPeakRpm += 300; exhaustMultiplier = 1.08; }
+if (exhaust === 'macra') { targetPeakRpm += 500; exhaustMultiplier = 1.12; }
+if (exhaust === 'voca') { targetPeakRpm += 900; exhaustMultiplier = 1.18; }
+if (exhaust === 'yasuni') { targetPeakRpm += 1300; exhaustMultiplier = 1.25; }
+if (exhaust === 'custom') { targetPeakRpm += 1600; exhaustMultiplier = 1.32; }
+calculateExhaustGeometry(targetPeakRpm, exhaustDeg, cc);
+let maxPowerCrank = baseHP * strokeMultiplier * (carbFactor * 0.30 + 0.70) * squishFactor * exhaustMultiplier * reedsMultiplier * ignitionMultiplier * timingFactor;
+if (isStock) maxPowerCrank = 4.8;
+let maxPowerWheel = maxPowerCrank * 0.84;
+const powerCrankCurve = [];
+const powerWheelCurve = [];
+const torqueCurve = [];
+let maxTorqueCalculated = 0;
+rpmRange.forEach(rpm => {
+let hpCrank = 0;
+if (rpm < targetPeakRpm) {
+const x = (rpm - 1400) / (targetPeakRpm - 1400);
+hpCrank = maxPowerCrank * Math.pow(x, isStock ? 1.8 : 2.2);
+} else {
+const overrevSlope = isStock ? 4.5 : ((exhaustDeg > 190) ? 1.3 : 2.4);
+const x = (rpm - targetPeakRpm) / (isStock ? 1400 : 3200);
+hpCrank = maxPowerCrank * Math.exp(-x * overrevSlope);
+}
+if (hpCrank < 0.2) hpCrank = 0.2;
+let hpWheel = hpCrank * 0.84;
+let torque = (hpCrank * 7000) / rpm;
+if (torque > maxTorqueCalculated) maxTorqueCalculated = torque;
+powerCrankCurve.push(parseFloat(hpCrank.toFixed(2)));
+powerWheelCurve.push(parseFloat(hpWheel.toFixed(2)));
+torqueCurve.push(parseFloat(torque.toFixed(2)));
+});
+let secondaryRatio = rearTeeth / frontTeeth;
+if (ratioDisplayVal) ratioDisplayVal.textContent = ⁠Relação: ${secondaryRatio.toFixed(2)} : 1⁠;
+let tireCircumferenceMeters = (bikeType === 'wolf') ? 1.845 : 1.960;
+let totalTopGearRatio = moriniPrimaryRatio * moriniGearRatios[6] * secondaryRatio;
+let topSpeedCalculated = (targetPeakRpm * tireCircumferenceMeters * 60) / (totalTopGearRatio * 1000);
+if (isStock && bikeType === 'wolf') topSpeedCalculated = 55.0;
+return {
+powerCrankCurve,
+powerWheelCurve,
+torqueCurve,
+maxPowerCrank: parseFloat(maxPowerCrank.toFixed(1)),
+maxPowerWheel: parseFloat(maxPowerWheel.toFixed(1)),
+maxTorque: parseFloat(maxTorqueCalculated.toFixed(1)),
+peakRpm: Math.round(targetPeakRpm),
+compRatio: (14.2 - (squish * 2.3)).toFixed(1),
+topSpeed: Math.round(topSpeedCalculated),
+detonationRisk,
+frontTeeth,
+rearTeeth,
+tireCircumferenceMeters,
+exhaustDeg,
+isStock,
+powerbandStart: isStock ? 5200 : Math.round(targetPeakRpm - 1200),
+powerbandEnd: isStock ? 8200 : Math.round(targetPeakRpm + 1400)
+};
+}
+function updateDynoUI() {
+if (squishVal && squishInput) squishVal.textContent = ⁠${parseFloat(squishInput.value).toFixed(2)} mm⁠;
+if (exhaustDegVal && exhaustDegInput) exhaustDegVal.textContent = ⁠${exhaustDegInput.value}°⁠;
+if (ignitionTimingVal && ignitionTimingInput) ignitionTimingVal.textContent = ⁠${ignitionTimingInput.value}° (BTDC)⁠;
+const res = calculatePerformance();
+dynoChart.data.datasets[0].data = res.powerCrankCurve;
+dynoChart.data.datasets[1].data = res.powerWheelCurve;
+dynoChart.data.datasets[2].data = res.torqueCurve;
+dynoChart.update();
+if (peakPowerCrankDisplay) peakPowerCrankDisplay.textContent = ⁠${res.maxPowerCrank} cv⁠;
+if (peakPowerWheelDisplay) peakPowerWheelDisplay.textContent = ⁠${res.maxPowerWheel} cv⁠;
+if (maxTorqueVal) maxTorqueVal.textContent = ⁠${res.maxTorque} Nm⁠;
+if (peakRpmVal) peakRpmVal.textContent = ⁠${res.peakRpm} RPM⁠;
+if (compRatioVal) compRatioVal.textContent = ⁠${res.compRatio} : 1⁠;
+if (topSpeedVal) topSpeedVal.textContent = ⁠${res.topSpeed} km/h⁠;
+if (detonationWarning) {
+if (res.detonationRisk) detonationWarning.classList.remove('hidden');
+else detonationWarning.classList.add('hidden');
+}
+const minRpm = 0;
+const maxRpm = 15000;
+const startAngle = -135 + ((res.powerbandStart - minRpm) / (maxRpm - minRpm)) * 270;
+const endAngle = -135 + ((res.powerbandEnd - minRpm) / (maxRpm - minRpm)) * 270;
+const startPct = ((startAngle + 135) / 270) * 100;
+const endPct = ((endAngle + 135) / 270) * 100;
+if (gaugePowerbandArc) {
+gaugePowerbandArc.style.background = ⁠conic-gradient(from 225deg at 50% 50%, transparent 0deg, rgba(249, 115, 22, 0) ${startPct}%, rgba(249, 115, 22, 0.9) ${startPct}%, rgba(249, 115, 22, 0.9) ${endPct}%, transparent ${endPct}%)⁠;
+}
+}
+function resizeCanvas() {
+if (!bikeCanvas) return;
+bikeCanvas.width = bikeCanvas.clientWidth || 600;
+bikeCanvas.height = bikeCanvas.clientHeight || 230;
+}
+function drawBikeScene() {
+if (!ctxCanvas || !bikeCanvas) return;
+const w = bikeCanvas.width;
+const h = bikeCanvas.height;
+ctxCanvas.clearRect(0, 0, w, h);
+const groundY = h - 35;
+ctxCanvas.fillStyle = '#090d16';
+ctxCanvas.fillRect(0, groundY, w, 35);
+ctxCanvas.fillStyle = '#f97316';
+ctxCanvas.fillRect(0, groundY - 3, w, 3);
+ctxCanvas.strokeStyle = '#334155';
+ctxCanvas.lineWidth = 3;
+ctxCanvas.setLineDash([30, 30]);
+ctxCanvas.lineDashOffset = roadOffset;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(0, groundY + 16);
+ctxCanvas.lineTo(w, groundY + 16);
+ctxCanvas.stroke();
+ctxCanvas.setLineDash([]);
+const cx = w * 0.45;
+const cy = groundY - 65;
+wheelRotationAngle += (currentSpeed * 0.055);
+ctxCanvas.save();
+ctxCanvas.translate(cx, cy);
+ctxCanvas.rotate(-wheelieAngle * Math.PI / 180);
+if (bikeType === 'wolf') {
+// Chassi perimetral em alumínio polido
+ctxCanvas.strokeStyle = '#e2e8f0';
+ctxCanvas.lineWidth = 8;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(-50, 15);
+ctxCanvas.lineTo(-10, -25);
+ctxCanvas.lineTo(35, -20);
+ctxCanvas.lineTo(55, 20);
+ctxCanvas.stroke();
+// Motor Franco Morini G30
+ctxCanvas.fillStyle = '#0f172a';
+ctxCanvas.strokeStyle = '#475569';
+ctxCanvas.lineWidth = 2;
+ctxCanvas.beginPath();
+ctxCanvas.roundRect(-22, 5, 44, 34, 6);
+ctxCanvas.fill();
+ctxCanvas.stroke();
+// Escape de expansão cromado
+ctxCanvas.strokeStyle = '#94a3b8';
+ctxCanvas.lineWidth = 6;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(10, 10);
+ctxCanvas.quadraticCurveTo(55, 35, 75, 15);
+ctxCanvas.stroke();
+ctxCanvas.fillStyle = '#cbd5e1';
+ctxCanvas.fillRect(68, 10, 20, 8);
+// Depósito e Carenagem Preta
+ctxCanvas.fillStyle = '#111827';
+ctxCanvas.beginPath();
+ctxCanvas.roundRect(-36, -46, 74, 25, [6, 16, 6, 6]);
+ctxCanvas.fill();
+ctxCanvas.strokeStyle = '#38bdf8';
+ctxCanvas.lineWidth = 1.5;
+ctxCanvas.stroke();
+// Banco preto
+ctxCanvas.fillStyle = '#1f2937';
+ctxCanvas.beginPath();
+ctxCanvas.roundRect(-62, -42, 32, 12, 4);
+ctxCanvas.fill();
+// Guiador e farol frontal de estrada
+ctxCanvas.fillStyle = '#374151';
+ctxCanvas.beginPath();
+ctxCanvas.roundRect(50, -32, 12, 20, 3);
+ctxCanvas.fill();
+drawRoadWheel(-75, 38, 30, wheelRotationAngle);
+drawRoadWheel(75, 38, 30, wheelRotationAngle);
+} else {
+// Chassi tubular reforçado
+ctxCanvas.strokeStyle = '#cbd5e1';
+ctxCanvas.lineWidth = 6;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(-50, 15);
+ctxCanvas.lineTo(-15, -28);
+ctxCanvas.lineTo(30, -22);
+ctxCanvas.lineTo(55, 22);
+ctxCanvas.stroke();
+// Suspensão invertida dourada
+ctxCanvas.strokeStyle = '#eab308';
+ctxCanvas.lineWidth = 4;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(45, -22);
+ctxCanvas.lineTo(62, 20);
+ctxCanvas.stroke();
+// Motor Franco Morini G30
+ctxCanvas.fillStyle = '#0f172a';
+ctxCanvas.strokeStyle = '#64748b';
+ctxCanvas.lineWidth = 2;
+ctxCanvas.beginPath();
+ctxCanvas.roundRect(-22, 5, 44, 34, 6);
+ctxCanvas.fill();
+ctxCanvas.stroke();
+// Carenagens azuis e banco amarelo
+ctxCanvas.fillStyle = '#1d4ed8';
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(-55, -20);
+ctxCanvas.lineTo(-20, -48);
+ctxCanvas.lineTo(45, -42);
+ctxCanvas.lineTo(58, -10);
+ctxCanvas.closePath();
+ctxCanvas.fill();
+ctxCanvas.strokeStyle = '#3b82f6';
+ctxCanvas.lineWidth = 2;
+ctxCanvas.stroke();
+ctxCanvas.fillStyle = '#eab308';
+ctxCanvas.beginPath();
+ctxCanvas.roundRect(-58, -50, 72, 12, [8, 14, 4, 4]);
+ctxCanvas.fill();
+ctxCanvas.fillStyle = '#eab308';
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(45, -42);
+ctxCanvas.lineTo(75, -30);
+ctxCanvas.lineTo(62, 0);
+ctxCanvas.closePath();
+ctxCanvas.fill();
+ctxCanvas.fillStyle = '#ffffff';
+ctxCanvas.fillRect(58, -20, 10, 10);
+drawSpokeWheel(-78, 38, 32, wheelRotationAngle);
+drawSpokeWheel(78, 38, 32, wheelRotationAngle);
+}
+ctxCanvas.restore();
+}
+function drawSpokeWheel(x, y, radius, rotAngle) {
+ctxCanvas.save();
+ctxCanvas.translate(x, y);
+ctxCanvas.fillStyle = '#090d16';
+ctxCanvas.beginPath();
+ctxCanvas.arc(0, 0, radius, 0, Math.PI * 2);
+ctxCanvas.fill();
+ctxCanvas.strokeStyle = '#334155';
+ctxCanvas.lineWidth = 5;
+ctxCanvas.stroke();
+ctxCanvas.rotate(rotAngle);
+ctxCanvas.strokeStyle = '#cbd5e1';
+ctxCanvas.lineWidth = 1;
+for (let i = 0; i < 12; i++) {
+const angle = (i * Math.PI * 2) / 12;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(0, 0);
+ctxCanvas.lineTo(Math.cos(angle) * (radius - 5), Math.sin(angle) * (radius - 5));
+ctxCanvas.stroke();
+}
+ctxCanvas.restore();
+}
+function drawRoadWheel(x, y, radius, rotAngle) {
+ctxCanvas.save();
+ctxCanvas.translate(x, y);
+ctxCanvas.fillStyle = '#090d16';
+ctxCanvas.beginPath();
+ctxCanvas.arc(0, 0, radius, 0, Math.PI * 2);
+ctxCanvas.fill();
+ctxCanvas.strokeStyle = '#1e293b';
+ctxCanvas.lineWidth = 6;
+ctxCanvas.stroke();
+ctxCanvas.rotate(rotAngle);
+ctxCanvas.strokeStyle = '#64748b';
+ctxCanvas.lineWidth = 4;
+for (let i = 0; i < 3; i++) {
+const angle = (i * Math.PI * 2) / 3;
+ctxCanvas.beginPath();
+ctxCanvas.moveTo(0, 0);
+ctxCanvas.lineTo(Math.cos(angle) * (radius - 4), Math.sin(angle) * (radius - 4));
+ctxCanvas.stroke();
+}
+ctxCanvas.restore();
+}
+function initAudio() {
+if (!audioCtx) {
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+audioCtx = new AudioContextClass();
+}
+if (audioCtx.state === 'suspended') {
+audioCtx.resume();
+}
+if (!oscMain && audioCtx) {
+oscMain = audioCtx.createOscillator();
+oscMain.type = 'sawtooth';
+oscHarmonic = audioCtx.createOscillator();
+oscHarmonic.type = 'triangle';
+filterNode = audioCtx.createBiquadFilter();
+filterNode.type = 'lowpass';
+filterNode.frequency.setValueAtTime(1400, audioCtx.currentTime);
+filterNode.Q.setValueAtTime(4.0, audioCtx.currentTime);
+masterGain = audioCtx.createGain();
+masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+oscMain.connect(filterNode);
+oscHarmonic.connect(filterNode);
+filterNode.connect(masterGain);
+masterGain.connect(audioCtx.destination);
+oscMain.start();
+oscHarmonic.start();
+}
+}
+function updateAudio(rpm, throttle) {
+if (!audioEnabled || !audioCtx || !oscMain || !masterGain || isStalled) {
+if (masterGain && audioCtx) masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+return;
+}
+const baseFreq = Math.max(40, (rpm / 30));
+oscMain.frequency.setTargetAtTime(baseFreq, audioCtx.currentTime, 0.02);
+oscHarmonic.frequency.setTargetAtTime(baseFreq * 2, audioCtx.currentTime, 0.02);
+const targetFilterFreq = 600 + (rpm / 15000) * 3200 + (throttle / 100) * 1500;
+filterNode.frequency.setTargetAtTime(targetFilterFreq, audioCtx.currentTime, 0.03);
+let volume = (throttle > 5 || rpm > 1600) ? (0.02 + (throttle / 100) * 0.14 + (rpm / 15000) * 0.08) : 0;
+if (!audioEnabled) volume = 0;
+masterGain.gain.setTargetAtTime(volume, audioCtx.currentTime, 0.03);
+}
+function simulationLoop() {
+const throttle = throttleSlider ? parseInt(throttleSlider.value) : 0;
+const perf = calculatePerformance();
+const MAX_RPM_LIMIT = 14500;
+let targetRpm = 1400;
+if (isStalled) {
+targetRpm = 0;
+currentRpm = 0;
+currentSpeed *= 0.90;
+if (currentSpeed < 0.2) currentSpeed = 0;
+if (stallWarning) stallWarning.classList.remove('hidden');
+} else {
+if (stallWarning) stallWarning.classList.add('hidden');
+if (currentGear === 0 || isClutchPulled) {
+targetRpm = 1400 + (throttle / 100) * (perf.peakRpm + 1000 - 1400);
+currentSpeed *= 0.94;
+if (currentSpeed < 0.2) currentSpeed = 0;
+} else {
+let frontTeeth = frontSprocketInput ? parseInt(frontSprocketInput.value) || 14 : 14;
+let rearTeeth = rearSprocketInput ? parseInt(rearSprocketInput.value) || 48 : 48;
+const secondaryRatio = rearTeeth / frontTeeth;
+const totalRatio = moriniPrimaryRatio * moriniGearRatios[currentGear] * secondaryRatio;
+let maxSpeedThisGear = (perf.peakRpm * perf.tireCircumferenceMeters * 60) / (totalRatio * 1000) * 1.15;
+let targetSpeedForThrottle = (throttle / 100) * maxSpeedThisGear;
+// Permite acelerar diretamente em qualquer mudança (1ª, 2ª, 3ª, 4ª, 5ª ou 6ª)
+if (currentSpeed < targetSpeedForThrottle) {
+let accelerationFactor = 0.035 / (currentGear * 0.45);
+currentSpeed += (targetSpeedForThrottle - currentSpeed) * accelerationFactor;
+} else {
+currentSpeed -= (currentSpeed - targetSpeedForThrottle) * 0.04;
+}
+if (currentSpeed < 0) currentSpeed = 0;
+let calculatedRpm = (currentSpeed * totalRatio * 1000) / (perf.tireCircumferenceMeters * 60);
+targetRpm = Math.max(calculatedRpm, 1400 + (throttle / 100) * (MAX_RPM_LIMIT - 1400) * 0.2 + calculatedRpm * 0.8);
+}
+}
+if (!isStalled) {
+if (targetRpm > MAX_RPM_LIMIT) targetRpm = MAX_RPM_LIMIT;
+if (currentGear === 0 && targetRpm < 1400) targetRpm = 1400;
+let inertiaFactor = (targetRpm > currentRpm) ? 0.08 : 0.12;
+currentRpm += (targetRpm - currentRpm) * inertiaFactor;
+if (currentRpm > MAX_RPM_LIMIT) currentRpm = MAX_RPM_LIMIT;
+if (currentRpm < 1400) currentRpm = 1400;
+}
+const isPowerband = !isStalled && (currentRpm >= perf.powerbandStart) && (currentRpm <= perf.powerbandEnd) && (throttle > 25);
+if (powerbandBadge) {
+if (isPowerband) {
+powerbandBadge.classList.add('powerband-active');
+powerbandBadge.textContent = '⚡ POWERBAND : ATIVA!';
+} else {
+powerbandBadge.classList.remove('powerband-active');
+powerbandBadge.textContent = '⚡ POWERBAND : OFF';
+}
+}
+if (isPowerband && (currentGear === 1 || currentGear === 2) && throttle > 75 && !perf.isStock && !isStalled) {
+const targetWheelie = (currentGear === 1) ? 22 : 8;
+wheelieAngle += (targetWheelie - wheelieAngle) * 0.1;
+} else {
+wheelieAngle -= wheelieAngle * 0.12;
+if (wheelieAngle < 0) wheelieAngle = 0;
+}
+roadOffset += (currentSpeed * 0.45);
+if (liveRpmDisplay) liveRpmDisplay.textContent = Math.round(currentRpm);
+if (displayGearNum) displayGearNum.textContent = currentGear === 0 ? 'N' : currentGear;
+if (displaySpeedNum) displaySpeedNum.textContent = ⁠${currentSpeed.toFixed(1)} km/h⁠;
+if (hudSpeed) hudSpeed.innerHTML = ⁠${Math.round(currentSpeed)} <span class="text-xs font-normal text-slate-400">KM/H</span>⁠;
+if (hudGear) hudGear.textContent = ⁠MUDANÇA: ${currentGear === 0 ? 'NEUTRO' : currentGear + 'ª'} ${isClutchPulled ? '(EMBRAIAGEM)' : ''}⁠;
+if (throttlePercentVal) throttlePercentVal.textContent = ⁠${throttle}%⁠;
+const clampedRpm = Math.min(Math.max(currentRpm, 0), 15000);
+const needleAngle = -135 + ((clampedRpm / 15000) * 270);
+if (gaugeNeedle) gaugeNeedle.style.transform = ⁠rotate(${needleAngle}deg)⁠;
+if (audioEnabled && !isStalled) {
+initAudio();
+updateAudio(currentRpm, throttle);
+} else if (masterGain && audioCtx) {
+masterGain.gain.setValueAtTime(0, audioCtx.currentTime, 0.05);
+}
+drawBikeScene();
+requestAnimationFrame(simulationLoop);
+}
+[kitSelect, crankshaftSelect, squishInput, exhaustDegInput, carbSelect, exhaustSelect, ignitionSelect, reedsSelect, ignitionTimingInput, frontSprocketInput, rearSprocketInput].forEach(el => {
+if (el) {
+el.addEventListener('input', updateDynoUI);
+el.addEventListener('change', updateDynoUI);
+}
+});
+if (btnReset) {
+btnReset.addEventListener('click', () => {
+if (kitSelect) kitSelect.value = "50";
+if (crankshaftSelect) crankshaftSelect.value = "stock";
+if (squishInput) squishInput.value = 1.10;
+if (exhaustDegInput) exhaustDegInput.value = 168;
+if (carbSelect) carbSelect.value = "17.5";
+if (exhaustSelect) exhaustSelect.value = "stock";
+if (ignitionSelect) ignitionSelect.value = "stock";
+if (reedsSelect) reedsSelect.value = "stock";
+if (ignitionTimingInput) ignitionTimingInput.value = 18;
+if (frontSprocketInput) frontSprocketInput.value = 14;
+if (rearSprocketInput) rearSprocketInput.value = 48;
+if (throttleSlider) throttleSlider.value = 0;
+currentGear = 0;
+isStalled = false;
+isClutchPulled = false;
+updateDynoUI();
+});
+}
+if (btnSelectWolf) {
+btnSelectWolf.addEventListener('click', () => {
+bikeType = 'wolf';
+btnSelectWolf.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg bg-orange-600 text-white shadow";
+if (btnSelectRmx) btnSelectRmx.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg text-slate-400 hover:text-white";
+updateDynoUI();
+});
+}
+if (btnSelectRmx) {
+btnSelectRmx.addEventListener('click', () => {
+bikeType = 'rmx';
+btnSelectRmx.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg bg-yellow-500 text-slate-950 shadow";
+if (btnSelectWolf) btnSelectWolf.className = "px-3 py-1 text-xs font-bold font-orbitron rounded-lg text-slate-400 hover:text-white";
+updateDynoUI();
+});
+}
+if (btnClutch) {
+btnClutch.addEventListener('mousedown', () => { isClutchPulled = true; if(clutchStatusText) clutchStatusText.textContent = "Puxada"; btnClutch.classList.add('bg-amber-600', 'text-white'); });
+btnClutch.addEventListener('mouseup', () => { isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; btnClutch.classList.remove('bg-amber-600', 'text-white'); });
+btnClutch.addEventListener('mouseleave', () => { isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; btnClutch.classList.remove('bg-amber-600', 'text-white'); });
+btnClutch.addEventListener('touchstart', (e) => { e.preventDefault(); isClutchPulled = true; if(clutchStatusText) clutchStatusText.textContent = "Puxada"; });
+btnClutch.addEventListener('touchend', (e) => { e.preventDefault(); isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; });
+}
+if (btnGearUp) btnGearUp.addEventListener('click', () => { if (currentGear < 6) currentGear++; if(isStalled) isStalled = false; });
+if (btnGearDown) btnGearDown.addEventListener('click', () => { if (currentGear > 0) currentGear--; if(isStalled) isStalled = false; });
+function setThrottle(val) { if (throttleSlider) throttleSlider.value = val; }
+if (btnThrottle) {
+btnThrottle.addEventListener('mousedown', () => setThrottle(100));
+btnThrottle.addEventListener('mouseup', () => setThrottle(0));
+btnThrottle.addEventListener('mouseleave', () => setThrottle(0));
+btnThrottle.addEventListener('touchstart', (e) => { e.preventDefault(); setThrottle(100); });
+btnThrottle.addEventListener('touchend', (e) => { e.preventDefault(); setThrottle(0); });
+}
+window.addEventListener('keydown', (e) => {
+if (e.code === 'Space' && !isSpacePressed) {
+isSpacePressed = true;
+setThrottle(100);
+}
+if (e.code === 'KeyS' || e.key === 'Shift') { if (currentGear < 6) currentGear++; if(isStalled) isStalled = false; }
+if (e.code === 'KeyA' || e.key === 'Control') { if (currentGear > 0) currentGear--; if(isStalled) isStalled = false; }
+if (e.code === 'KeyC') { isClutchPulled = true; if(clutchStatusText) clutchStatusText.textContent = "Puxada"; }
+});
+window.addEventListener('keyup', (e) => {
+if (e.code === 'Space') {
+isSpacePressed = false;
+setThrottle(0);
+}
+if (e.code === 'KeyC') { isClutchPulled = false; if(clutchStatusText) clutchStatusText.textContent = "Solta"; }
+});
+if (btnAudioToggle) {
+btnAudioToggle.addEventListener('click', () => {
+audioEnabled = !audioEnabled;
+if (audioStatus) {
+audioStatus.textContent = audioEnabled ? 'Ativado' : 'Desativado';
+audioStatus.className = audioEnabled ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold';
+}
+if (!audioEnabled && masterGain) masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+});
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+updateDynoUI();
+simulationLoop();
+});
+</script>
+</body>
+</html>
