@@ -680,11 +680,7 @@
                 if (crankshaft === 'racing') strokeMultiplier = 1.02;
                 if (crankshaft === 'longstroke') strokeMultiplier = 1.06;
 
-                let carbSizeNumeric = 17.5;
-                if (!isNaN(carbVal)) {
-                    carbSizeNumeric = parseFloat(carbVal);
-                }
-
+                let carbSizeNumeric = parseFloat(carbVal) || 17.5;
                 let carbFactor = carbSizeNumeric / 24;
 
                 let ignitionMultiplier = 1.0;
