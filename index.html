@@ -3,321 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dyno Simulator Pro - Suzuki Wolf 50 / RMX (Morini G30)</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Simulador Franco Morini G30 - Suzuki Wolf & RMX 50</title>
     <style>
-        :root { --bg-color: #0f172a; --panel-bg: #1e293b; --accent: #eab308; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 15px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 20px; }
-        header h1 { font-size: 1.8rem; color: var(--accent); margin-bottom: 5px; }
-        header p { color: var(--text-muted); font-size: 0.9rem; }
-        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media(min-width: 900px) { .grid-layout { grid-template-columns: 380px 1fr; } }
-        .card { background-color: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab-btn { background: #334155; border: none; color: var(--text-muted); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; flex: 1; text-align: center; }
-        .tab-btn.active { background: var(--accent); color: #000; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-        select, input { width: 100%; padding: 8px 10px; background: var(--bg-color); border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-        .metric-box { background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
-        .metric-box h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .metric-box p { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-top: 4px; }
-        .chart-container { position: relative; height: 280px; width: 100%; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { color: var(--text-muted); }
-        .diagnostic-box { background: #0f172a; border-left: 4px solid var(--accent); padding: 10px; border-radius: 0 8px 8px 0; font-size: 0.85rem; margin-top: 10px; }
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.4);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-configs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .val-display {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .dash-panel {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .dash-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dash-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .dash-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .powerband-light {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: #334155;
+            color: #64748b;
+            transition: all 0.1s ease;
+        }
+
+        .powerband-light.active {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #334155;
+            color: var(--text);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-gear {
+            background: #1e293b;
+            border: 1px solid var(--border);
+        }
+
+        .gears-container {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .gear-btn {
+            flex: 1;
+            padding: 8px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .gear-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Suzuki Wolf 50 / RMX (Morini G30) Dyno</h1>
-            <p>Simulador Específico — Curso Original Morini 39.0mm & Rotores HPI</p>
-        </header>
 
-        <div class="grid-layout">
-            <div class="card">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab(event, 'tab-engine')">🔧 Motor</button>
-                    <button class="tab-btn" onclick="switchTab(event, 'tab-intake')">💨 Admissão</button>
-                    <button class="tab-btn" onclick="switchTab(event, 'tab-exhaust')">⚡ Escape/HPI</button>
-                    <button class="tab-btn" onclick="switchTab(event, 'tab-trans')">⚙️ Transmissão</button>
-                </div>
+<div class="container">
+    <header>
+        <h1>Franco Morini G30 Simulator</h1>
+        <p>Suzuki Wolf 50 & RMX 50 - Banco de Ensaio & Condução Real</p>
+    </header>
 
-                <!-- Motor & Cilindro -->
-                <div id="tab-engine" class="tab-content active">
-                    <div class="form-group">
-                        <label>Cilindro (Franco Morini G30)</label>
-                        <select id="cylinder" onchange="calculateDyno()">
-                            <option value="50_origem">Origem 50cc Suzuki (Ferro/Alumínio)</option>
-                            <option value="50_airsal">Airsal 50cc Alumínio Nikasil</option>
-                            <option value="70_barikit" selected>Barikit 70cc (Ø48mm Nikasil)</option>
-                            <option value="70_airsal">Airsal 70cc / 74cc Alumínio</option>
-                            <option value="78_motorkit">Motorkit 78cc (Ø50mm Ferro)</option>
-                            <option value="70_athena">Athena / Italkit 70cc Racing</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Curso da Cambota (Morini G30)</label>
-                        <select id="stroke" onchange="calculateDyno()">
-                            <option value="39.0" selected>Curso Original Suzuki (39.0mm)</option>
-                            <option value="42.0">Curso Longo 42.0mm (Stroker pin)</option>
-                            <option value="43.0">Curso Longo 43.0mm</option>
-                            <option value="44.0">Curso Extremo 44.0mm (Flange no cilindro)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Squish (Ajuste da Cabeça)</label>
-                        <select id="squish" onchange="calculateDyno()">
-                            <option value="1.0">1.0mm (Seguro / Origem)</option>
-                            <option value="0.8" selected>0.8mm (Otimizado Estrada)</option>
-                            <option value="0.6">0.6mm (Alta Taxa de Compressão)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Diagrama de Escape (Graus)</label>
-                        <select id="timing" onchange="calculateDyno()">
-                            <option value="175">175º (Baixas / Força)</option>
-                            <option value="188" selected>188º (Equilibrado / All-Round)</option>
-                            <option value="195">195º (Racing / Altas RPM)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Admissão -->
-                <div id="tab-intake" class="tab-content">
-                    <div class="form-group">
-                        <label>Carburador</label>
-                        <select id="carb" onchange="calculateDyno()">
-                            <option value="14">14mm Mikuni / Dellorto</option>
-                            <option value="19">19mm Black Edition</option>
-                            <option value="21">21mm PWK / Dellorto</option>
-                            <option value="24">24mm PWK Flat-Slide</option>
-                            <option value="26" selected>26mm PWK Flat-Slide (Ideal 70cc)</option>
-                            <option value="28">28mm PWK Flat-Slide</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Lamelas (Caixa Morini G30)</label>
-                        <select id="reeds" onchange="calculateDyno()">
-                            <option value="origem">Pétalas Origem (Aço/Fibra)</option>
-                            <option value="carbono_30" selected>Lâminas Carbono 0.30mm (Malossi/Athena)</option>
-                            <option value="carbono_35">Lâminas Carbono 0.35mm (Italkit/Polini)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Ignição HPI & Escape -->
-                <div id="tab-exhaust" class="tab-content">
-                    <div class="form-group">
-                        <label>Ignição / Rotor</label>
-                        <select id="ignition" onchange="calculateDyno()">
-                            <option value="origem">Origem Kokusan / Ducati (Volante Pesado)</option>
-                            <option value="hpi_light">HPI 12V 60W c/ Luzes (Morini G30)</option>
-                            <option value="hpi_1curve" selected>HPI Rotor Interior 1-Curve (430g)</option>
-                            <option value="hpi_2curve">HPI Rotor Interior 2-Curves (Comutador)</option>
-                            <option value="italkit_selettra">Italkit Selettra / PVL Analógico</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Sistema de Escape</label>
-                        <select id="exhaust" onchange="calculateDyno()">
-                            <option value="origem">Escape Origem Desrestrito</option>
-                            <option value="turbokit">Turbokit GP / Cross (Suzuki RMX)</option>
-                            <option value="voca_rookie" selected>VOCA Rookie 50/70</option>
-                            <option value="voca_carbon">VOCA Carbon 70/80</option>
-                            <option value="artesanal">Escape Artesanal (Calculado p/ 190º+)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Transmissão Suzuki Morini -->
-                <div id="tab-trans" class="tab-content">
-                    <div class="form-group">
-                        <label>Pinhão de Ataque</label>
-                        <select id="front_sprocket" onchange="calculateDyno()">
-                            <option value="12">12 Dentes</option>
-                            <option value="13">13 Dentes</option>
-                            <option value="14" selected>14 Dentes</option>
-                            <option value="15">15 Dentes</option>
-                            <option value="16">16 Dentes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Cremalheira</label>
-                        <select id="rear_sprocket" onchange="calculateDyno()">
-                            <option value="45">45 Dentes</option>
-                            <option value="48" selected>48 Dentes</option>
-                            <option value="50">50 Dentes</option>
-                            <option value="52">52 Dentes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Medida Pneu Traseiro</label>
-                        <select id="tire" onchange="calculateDyno()">
-                            <option value="130_70_17" selected>130/70-17 (Supermoto Wolf)</option>
-                            <option value="100_90_18">100/90-18 (Enduro RMX)</option>
-                        </select>
-                    </div>
-                </div>
+    <!-- SECÇÃO 1: BANCO DE ENSAIO -->
+    <div class="card">
+        <h2>Banco de Ensaio (Dyno)</h2>
+        <div class="grid-configs">
+            <div class="control-group">
+                <label>Modelo / Ciclo</label>
+                <select id="bikeModel" onchange="updateSimConfig()">
+                    <option value="wolf">Suzuki Wolf 50 (Estrada)</option>
+                    <option value="rmx">Suzuki RMX 50 (Enduro)</option>
+                </select>
             </div>
-
-            <!-- Gráficos -->
-            <div class="card">
-                <div class="metrics-grid">
-                    <div class="metric-box"><h3>Potência Máxima</h3><p id="max-power">0.0 cv</p></div>
-                    <div class="metric-box"><h3>Binário Máximo</h3><p id="max-torque">0.0 Nm</p></div>
-                    <div class="metric-box"><h3>Rotação de Pico</h3><p id="peak-rpm">0 RPM</p></div>
-                    <div class="metric-box"><h3>Velocidade Final (6ª)</h3><p id="max-speed">0 km/h</p></div>
-                </div>
-                <div class="chart-container"><canvas id="dynoChart"></canvas></div>
-                <div class="diagnostic-box" id="diagnostic-text">A carregar banco de ensaio...</div>
-                <div style="margin-top: 15px;">
-                    <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Velocidades por Mudança (Morini G30 Primária 19/67)</h4>
-                    <table>
-                        <thead><tr><th>1ª</th><th>2ª</th><th>3ª</th><th>4ª</th><th>5ª</th><th>6ª</th></tr></thead>
-                        <tbody><tr><td id="g1">-</td><td id="g2">-</td><td id="g3">-</td><td id="g4">-</td><td id="g5">-</td><td id="g6">-</td></tr></tbody>
-                    </table>
-                </div>
+            <div class="control-group">
+                <label>Escape</label>
+                <select id="exhaustSelect" onchange="updateSimConfig()">
+                    <option value="stock">Origem / Desrestrito</option>
+                    <option value="voca">VOCA Rookie 50/70</option>
+                    <option value="yasuni">Yasuni R3</option>
+                    <option value="macal">Macal M90 Artesanal</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Carburador</label>
+                <select id="carbSelect" onchange="updateSimConfig()">
+                    <option value="sha14">Dellorto SHA 14mm</option>
+                    <option value="phbg19">Dellorto PHBG 19mm</option>
+                    <option value="pwk26">Stage6 PWK 26mm</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Ignição / Rotor</label>
+                <select id="ignitionSelect" onchange="updateSimConfig()">
+                    <option value="stock">Origem (Volante Pesado)</option>
+                    <option value="mvt">Rotor Interno MVT / PVL</option>
+                    <option value="prog">Digital Programável</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Squish: <span id="squishVal">0.80</span> mm</label>
+                <input type="range" id="squishInput" min="0.50" max="1.20" step="0.05" value="0.80" oninput="updateSimConfig()">
+            </div>
+            <div class="control-group">
+                <label>Diag. Escape: <span id="exhaustPortVal">185</span>°</label>
+                <input type="range" id="exhaustPortInput" min="170" max="200" step="1" value="185" oninput="updateSimConfig()">
             </div>
         </div>
     </div>
 
-    <script>
-        function switchTab(evt, tabID) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabID).classList.add('active');
-            evt.currentTarget.classList.add('active');
+    <!-- GRÁFICO DYNO -->
+    <div class="card">
+        <div class="canvas-container">
+            <canvas id="dynoCanvas" width="860" height="260"></canvas>
+        </div>
+    </div>
+
+    <!-- SECÇÃO 2: SIMULADOR DE ANDAMENTO -->
+    <div class="card">
+        <h2>Simulador em Andamento</h2>
+        
+        <div class="canvas-container" style="margin-top: 10px;">
+            <canvas id="rideCanvas" width="860" height="240"></canvas>
+        </div>
+
+        <div class="dash-panel" style="margin-top: 15px;">
+            <div class="dash-item">
+                <span class="dash-label">Velocidade</span>
+                <span class="dash-value"><span id="speedVal">0</span> <small>km/h</small></span>
+            </div>
+            <div class="dash-item">
+                <span class="dash-label">Rotação</span>
+                <span class="dash-value"><span id="rpmVal">1500</span> <small>RPM</small></span>
+            </div>
+            <div class="dash-item">
+                <span class="dash-label">Mudança</span>
+                <span class="dash-value" id="gearDisplay">N</span>
+            </div>
+            <div class="dash-item">
+                <span class="dash-label">Estado</span>
+                <div id="powerbandLight" class="powerband-light">POWERBAND</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <label style="margin-bottom: 5px; display:block;">Caixa de Velocidades</label>
+            <div class="gears-container">
+                <button class="gear-btn" onclick="setGear(0)">N</button>
+                <button class="gear-btn" onclick="setGear(1)">1</button>
+                <button class="gear-btn" onclick="setGear(2)">2</button>
+                <button class="gear-btn" onclick="setGear(3)">3</button>
+                <button class="gear-btn" onclick="setGear(4)">4</button>
+                <button class="gear-btn" onclick="setGear(5)">5</button>
+                <button class="gear-btn" onclick="setGear(6)">6</button>
+            </div>
+        </div>
+
+        <div class="actions-grid" style="margin-top: 15px;">
+            <button class="btn btn-gear" onclick="shiftGear(-1)">Reduzir [-]</button>
+            <button class="btn btn-gear" onclick="shiftGear(1)">Subir [+]</button>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <button id="throttleBtn" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.1rem;"
+                ontouchstart="setThrottle(1)" ontouchend="setThrottle(0)"
+                onmousedown="setThrottle(1)" onmouseup="setThrottle(0)"
+                onmouseleave="setThrottle(0)">
+                MANTER ACELERADOR (SEGURAR OU ESPAÇO)
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configurações do Motor e Simulação
+    let config = {
+        model: 'wolf',
+        exhaust: 'voca',
+        carb: 'pwk26',
+        ignition: 'mvt',
+        squish: 0.80,
+        exhaustPort: 185,
+        peakRpm: 10500,
+        maxHp: 13.5,
+        maxTorque: 8.2
+    };
+
+    let physics = {
+        rpm: 1500,
+        speed: 0, // km/h
+        gear: 0, // 0 = Neutral, 1-6
+        throttle: 0,
+        wheelieAngle: 0,
+        distance: 0,
+        clutch: 1.0
+    };
+
+    // Relações de transmissão G30 (Primária + 6 mudanças)
+    const gearRatios = [0, 3.12, 2.05, 1.50, 1.20, 1.00, 0.85];
+    const primaryRatio = 3.75;
+    const finalDrive = 3.6; // Pinhão/Coroa
+    const wheelCircumference = 1.85; // metros (roda 17")
+
+    // Áudio Web API
+    let audioCtx = null;
+    let osc = null;
+    let gainNode = null;
+    let audioInitialized = false;
+
+    function initAudio() {
+        if (audioInitialized) return;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            osc = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(40, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            audioInitialized = true;
+        } catch (e) {
+            console.log('Áudio não suportado ou bloqueado.');
         }
+    }
 
-        let dynoChart = null;
-
-        function initChart() {
-            const ctx = document.getElementById('dynoChart').getContext('2d');
-            dynoChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: [], datasets: [
-                    { label: 'Potência (cv)', data: [], borderColor: '#eab308', backgroundColor: 'rgba(234, 179, 8, 0.1)', yAxisID: 'y', tension: 0.3, fill: true },
-                    { label: 'Binário (Nm)', data: [], borderColor: '#3b82f6', yAxisID: 'y1', tension: 0.3 }
-                ]},
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        y: { position: 'left', ticks: { color: '#eab308' }, title: { display: true, text: 'cv', color: '#eab308' } },
-                        y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#3b82f6' }, title: { display: true, text: 'Nm', color: '#3b82f6' } }
-                    },
-                    plugins: { legend: { labels: { color: '#f8fafc' } } }
-                }
-            });
-            calculateDyno();
-        }
-
-        function calculateDyno() {
-            const cyl = document.getElementById('cylinder').value;
-            const stroke = parseFloat(document.getElementById('stroke').value);
-            const squish = parseFloat(document.getElementById('squish').value);
-            const timing = parseInt(document.getElementById('timing').value);
-            const carb = parseInt(document.getElementById('carb').value);
-            const reeds = document.getElementById('reeds').value;
-            const ign = document.getElementById('ignition').value;
-            const exhaust = document.getElementById('exhaust').value;
-
-            let baseHp = 4.0; let peakRpm = 8800; let maxTq = 5.5;
-
-            if (cyl === '50_origem') { baseHp = 7.0; peakRpm = 9200; maxTq = 6.0; }
-            else if (cyl === '50_airsal') { baseHp = 8.5; peakRpm = 10000; maxTq = 6.8; }
-            else if (cyl === '70_barikit') { baseHp = 14.2; peakRpm = 10800; maxTq = 9.8; }
-            else if (cyl === '70_airsal') { baseHp = 15.0; peakRpm = 11200; maxTq = 10.1; }
-            else if (cyl === '78_motorkit') { baseHp = 15.8; peakRpm = 10600; maxTq = 11.2; }
-            else if (cyl === '70_athena') { baseHp = 17.2; peakRpm = 12200; maxTq = 10.8; }
-
-            // Factor do Curso (Calculado face ao curso original de 39.0mm)
-            if (stroke > 39.0) {
-                const strokeFactor = stroke / 39.0;
-                baseHp *= strokeFactor;
-                maxTq *= strokeFactor;
+    function updateAudio() {
+        if (!audioInitialized || !audioCtx) return;
+        try {
+            let targetFreq = 30 + (physics.rpm / 125) * (config.ignition === 'mvt' ? 1.1 : 1.0);
+            if (physics.throttle > 0.1) {
+                targetFreq += Math.random() * 4; // vibração 2T
             }
-
-            // Squish e Compressão
-            if (squish === 0.6) { baseHp *= 1.04; maxTq *= 1.05; }
+            osc.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.05);
             
-            // Ignição HPI / Rotores
-            if (ign === 'hpi_light') { baseHp *= 1.03; peakRpm += 300; }
-            else if (ign === 'hpi_1curve' || ign === 'hpi_2curve') { baseHp *= 1.07; peakRpm += 600; }
-            else if (ign === 'italkit_selettra') { baseHp *= 1.06; peakRpm += 500; }
-
-            // Carburador
-            let carbFactor = 1.0;
-            if (carb === 14) carbFactor = 0.82;
-            else if (carb === 19) carbFactor = 0.95;
-            else if (carb === 21) carbFactor = 1.00;
-            else if (carb === 24) carbFactor = 1.04;
-            else if (carb === 26) carbFactor = (cyl.includes('70') || cyl.includes('78')) ? 1.09 : 0.94;
-            else if (carb === 28) carbFactor = (cyl.includes('70') || cyl.includes('78')) ? 1.12 : 0.88;
-            baseHp *= carbFactor;
-
-            // Escapes
-            if (exhaust === 'turbokit') baseHp *= 1.06;
-            else if (exhaust === 'voca_rookie') baseHp *= 1.08;
-            else if (exhaust === 'voca_carbon') baseHp *= 1.12;
-            else if (exhaust === 'artesanal') baseHp *= 1.15;
-
-            const rpms = []; const hpCurve = []; const tqCurve = [];
-            for (let r = 4000; r <= 14500; r += 500) {
-                rpms.push(r);
-                let ratio = r / peakRpm;
-                let hp = baseHp * Math.sin(ratio * Math.PI * 0.75) * (1 - Math.abs(ratio - 1) * 0.4);
-                if (hp < 0.5) hp = 0.5;
-                let tq = (hp > 0.5 && r > 4000) ? (hp * 735.5 * 9.5488) / (r * 1.36) : 0;
-                hpCurve.push(parseFloat(hp.toFixed(1)));
-                tqCurve.push(parseFloat(tq.toFixed(2)));
+            let targetGain = 0.0;
+            if (physics.rpm > 1200) {
+                targetGain = 0.03 + (physics.throttle * 0.07) + (physics.rpm > 8000 ? 0.04 : 0);
             }
+            gainNode.gain.setTargetAtTime(targetGain, audioCtx.currentTime, 0.05);
+        } catch (e) {}
+    }
 
-            dynoChart.data.labels = rpms;
-            dynoChart.data.datasets[0].data = hpCurve;
-            dynoChart.data.datasets[1].data = tqCurve;
-            dynoChart.update();
+    function updateSimConfig() {
+        config.model = document.getElementById('bikeModel').value;
+        config.exhaust = document.getElementById('exhaustSelect').value;
+        config.carb = document.getElementById('carbSelect').value;
+        config.ignition = document.getElementById('ignitionSelect').value;
+        config.squish = parseFloat(document.getElementById('squishInput').value);
+        config.exhaustPort = parseInt(document.getElementById('exhaustPortInput').value);
 
-            const maxHp = Math.max(...hpCurve);
-            const maxTqVal = Math.max(...tqCurve);
-            const peakRpmVal = rpms[hpCurve.indexOf(maxHp)];
+        document.getElementById('squishVal').innerText = config.squish.toFixed(2);
+        document.getElementById('exhaustPortVal').innerText = config.exhaustPort;
 
-            document.getElementById('max-power').innerText = maxHp.toFixed(1) + ' cv';
-            document.getElementById('max-torque').innerText = maxTqVal.toFixed(1) + ' Nm';
-            document.getElementById('peak-rpm').innerText = peakRpmVal + ' RPM';
+        // Cálculo dinâmico de potência baseada nos mods
+        let baseHp = 9.0;
+        if (config.exhaust === 'voca') baseHp += 3.5;
+        if (config.exhaust === 'yasuni') baseHp += 4.0;
+        if (config.exhaust === 'macal') baseHp += 2.5;
 
-            // Transmissão Franco Morini G30 (19/67 = 3.526)
-            const primary = 67 / 19;
-            const gearRatios = [3.08, 2.00, 1.50, 1.20, 1.00, 0.88];
-            const front = parseInt(document.getElementById('front_sprocket').value);
-            const rear = parseInt(document.getElementById('rear_sprocket').value);
-            const tire = document.getElementById('tire').value;
-            let circ = (tire === '130_70_17') ? 1.845 : 2.010;
+        if (config.carb === 'phbg19') baseHp += 1.0;
+        if (config.carb === 'pwk26') baseHp += 2.2;
 
-            const finalRatio = rear / front;
-            const topSpeed = (peakRpmVal * circ * 60) / (primary * gearRatios[5] * finalRatio * 1000);
-            document.getElementById('max-speed').innerText = Math.round(topSpeed) + ' km/h';
-
-            gearRatios.forEach((g, i) => {
-                let spd = (peakRpmVal * circ * 60) / (primary * g * finalRatio * 1000);
-                document.getElementById(`g${i+1}`).innerText = Math.round(spd) + ' km/h';
-            });
-
-            let diag = `✅ **Setup Franco Morini G30 (Curso ${stroke.toFixed(1)}mm) otimizado.**`;
-            if (ign.includes('hpi')) diag += " 🚀 **Rotor HPI:** Resposta imediata de acelerador e ganho nas altas RPMs.";
-            document.getElementById('diagnostic-text').innerHTML = diag;
+        if (config.squish <= 0.75) baseHp += 0.8;
+        if (config.exhaustPort >= 190) {
+            baseHp += 1.2;
+            config.peakRpm = 11500;
+        } else if (config.exhaustPort <= 180) {
+            config.peakRpm = 9500;
+        } else {
+            config.peakRpm = 10500;
         }
 
-        window.onload = initChart;
-    </script>
+        config.maxHp = baseHp;
+        config.maxTorque = baseHp * 0.65;
+
+        drawDyno();
+    }
+
+    function setThrottle(val) {
+        initAudio();
+        physics.throttle = val;
+    }
+
+    function setGear(g) {
+        physics.gear = g;
+        document.getElementById('gearDisplay').innerText = g === 0 ? 'N' : g;
+        
+        let btns = document.querySelectorAll('.gear-btn');
+        btns.forEach((b, idx) => {
+            if (idx === g) b.classList.add('active');
+            else b.classList.remove('active');
+        });
+    }
+
+    function shiftGear(dir) {
+        let newGear = physics.gear + dir;
+        if (newGear >= 0 && newGear <= 6) {
+            setGear(newGear);
+        }
+    }
+
+    // Atalhos de Teclado
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            initAudio();
+            physics.throttle = 1.0;
+            e.preventDefault();
+        }
+        if (e.code === 'ArrowUp' || e.code === 'KeyS') {
+            shiftGear(1);
+        }
+        if (e.code === 'ArrowDown' || e.code === 'KeyA') {
+            shiftGear(-1);
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+            physics.throttle = 0;
+            e.preventDefault();
+        }
+    });
+
+    // Desenhar Banco de Ensaio (Dyno)
+    const dynoCanvas = document.getElementById('dynoCanvas');
+    const ctxDyno = dynoCanvas.getContext('2d');
+
+    function drawDyno() {
+        ctxDyno.clearRect(0, 0, dynoCanvas.width, dynoCanvas.height);
+
+        // Fundo e grelha
+        ctxDyno.fillStyle = '#0f172a';
+        ctxDyno.fillRect(0, 0, dynoCanvas.width, dynoCanvas.height);
+
+        ctxDyno.strokeStyle = '#334155';
+        ctxDyno.lineWidth = 1;
+        for (let i = 0; i < dynoCanvas.width; i += 60) {
+            ctxDyno.beginPath();
+            ctxDyno.moveTo(i, 0);
+            ctxDyno.lineTo(i, dynoCanvas.height);
+            ctxDyno.stroke();
+        }
+        for (let j = 0; j < dynoCanvas.height; j += 40) {
+            ctxDyno.beginPath();
+            ctxDyno.moveTo(0, j);
+            ctxDyno.lineTo(dynoCanvas.width, j);
+            ctxDyno.stroke();
+        }
+
+        // Curva de Potência e Binário
+        ctxDyno.beginPath();
+        ctxDyno.lineWidth = 3;
+        ctxDyno.strokeStyle = '#f59e0b';
+
+        let maxRpm = 13000;
+        for (let rpm = 2000; rpm <= maxRpm; rpm += 200) {
+            let ratio = rpm / config.peakRpm;
+            let hp = config.maxHp * Math.sin(ratio * Math.PI * 0.75) * (rpm < 4000 ? (rpm / 4000) : 1);
+            if (hp < 0) hp = 0;
+
+            let x = ((rpm - 2000) / (maxRpm - 2000)) * (dynoCanvas.width - 60) + 40;
+            let y = dynoCanvas.height - 30 - (hp / 18) * (dynoCanvas.height - 50);
+
+            if (rpm === 2000) ctxDyno.moveTo(x, y);
+            else ctxDyno.lineTo(x, y);
+        }
+        ctxDyno.stroke();
+
+        // Texto informativo no dyno
+        ctxDyno.fillStyle = '#f8fafc';
+        ctxDyno.font = 'bold 13px sans-serif';
+        ctxDyno.fillText(`Potência Máx: ${config.maxHp.toFixed(1)} CV @ ${config.peakRpm} RPM`, 50, 30);
+        ctxDyno.fillText(`Squish: ${config.squish}mm | Escape: ${config.exhaustPort}°`, 50, 50);
+    }
+
+    // Desenhar Simulação de Condução e Física
+    const rideCanvas = document.getElementById('rideCanvas');
+    const ctxRide = rideCanvas.getContext('2d');
+
+    function updatePhysics() {
+        // Inércia da ignição
+        let inertia = config.ignition === 'mvt' ? 0.35 : 0.8;
+
+        let idleRpm = 1500;
+        let maxRpmLimit = 12500;
+
+        if (physics.gear === 0) {
+            // Em ponto morto
+            let targetRpm = idleRpm + physics.throttle * (maxRpmLimit - idleRpm);
+            physics.rpm += (targetRpm - physics.rpm) * (0.2 / inertia);
+            physics.speed *= 0.96; // desacelera por atrito
+            physics.wheelieAngle *= 0.8;
+        } else {
+            // Engatado
+            let gearRatio = gearRatios[physics.gear];
+            let totalRatio = primaryRatio * gearRatio * finalDrive;
+            
+            // Velocidade teórica com base no RPM
+            let wheelRps = (physics.rpm / 60) / totalRatio;
+            let currentSpeedKmh = wheelRps * wheelCircumference * 3.6;
+
+            if (physics.throttle > 0) {
+                let targetRpm = idleRpm + physics.throttle * (maxRpmLimit - idleRpm);
+                physics.rpm += (targetRpm - physics.rpm) * (0.1 / inertia);
+                
+                // Força de aceleração baseada na powerband
+                let inPowerband = physics.rpm >= 7500 && physics.rpm <= 11500;
+                let torqueFactor = inPowerband ? 1.3 : 0.6;
+                
+                let acceleration = (config.maxTorque * torqueFactor * physics.throttle * (7 / physics.gear)) / inertia;
+                physics.speed += acceleration * 0.08;
+
+                // Cavalinho (Wheelie) em 1ª e 2ª na powerband
+                if ((physics.gear === 1 || physics.gear === 2) && inPowerband && physics.throttle > 0.8) {
+                    physics.wheelieAngle = Math.min(0.35, physics.wheelieAngle + 0.03);
+                } else {
+                    physics.wheelieAngle *= 0.9;
+                }
+            } else {
+                // Travnagem de motor
+                physics.speed *= 0.98;
+                physics.rpm -= 200;
+                physics.wheelieAngle *= 0.85;
+            }
+
+            // Resistência aerodinâmica e atrito do modelo
+            let aeroDrag = config.model === 'wolf' ? 0.0003 : 0.0005;
+            physics.speed -= (physics.speed * physics.speed) * aeroDrag;
+
+            if (physics.speed < 0) physics.speed = 0;
+
+            // Recalcular RPM com base na velocidade real da roda
+            let calculatedRpm = (physics.speed / 3.6 / wheelCircumference) * totalRatio * 60;
+            if (calculatedRpm < idleRpm) calculatedRpm = idleRpm;
+            
+            physics.rpm = physics.rpm * 0.8 + calculatedRpm * 0.2;
+            if (physics.rpm > maxRpmLimit) physics.rpm = maxRpmLimit;
+        }
+
+        physics.distance += (physics.speed / 3.6) * 0.02;
+
+        // Atualizar UI
+        document.getElementById('speedVal').innerText = Math.round(physics.speed);
+        document.getElementById('rpmVal').innerText = Math.round(physics.rpm);
+
+        let powerbandLight = document.getElementById('powerbandLight');
+        if (physics.rpm >= 7500 && physics.rpm <= 11500) {
+            powerbandLight.classList.add('active');
+        } else {
+            powerbandLight.classList.remove('active');
+        }
+
+        updateAudio();
+        drawRideScene();
+        requestAnimationFrame(updatePhysics);
+    }
+
+    function drawRideScene() {
+        ctxRide.clearRect(0, 0, rideCanvas.width, rideCanvas.height);
+
+        // Fundo (Céu e Estrada)
+        ctxRide.fillStyle = '#1e293b';
+        ctxRide.fillRect(0, 0, rideCanvas.width, 140);
+        ctxRide.fillStyle = '#0f172a';
+        ctxRide.fillRect(0, 140, rideCanvas.width, 100);
+
+        // Linhas da estrada em movimento
+        ctxRide.strokeStyle = '#64748b';
+        ctxRide.lineWidth = 4;
+        ctxRide.beginPath();
+        let offset = (physics.distance * 15) % 40;
+        for (let x = -40 - offset; x < rideCanvas.width; x += 40) {
+            ctxRide.moveTo(x, 190);
+            ctxRide.lineTo(x + 20, 190);
+        }
+        ctxRide.stroke();
+
+        // Desenhar Mota (Wolf vs RMX)
+        ctxRide.save();
+        let bikeX = 220;
+        let bikeY = 145;
+
+        // Efeito de Cavalinho
+        ctxRide.translate(bikeX, bikeY);
+        ctxRide.rotate(-physics.wheelieAngle);
+        ctxRide.translate(-bikeX, -bikeY);
+
+        if (config.model === 'wolf') {
+            // Suzuki Wolf 50 (Estilo Estrada / Ciclomotor desportivo)
+            // Rodas liga leve
+            ctxRide.strokeStyle = '#cbd5e1';
+            ctxRide.lineWidth = 5;
+            ctxRide.beginPath();
+            ctxRide.arc(bikeX - 55, bikeY + 25, 22, 0, Math.PI * 2);
+            ctxRide.arc(bikeX + 55, bikeY + 25, 22, 0, Math.PI * 2);
+            ctxRide.stroke();
+
+            // Quadro e Carenagem
+            ctxRide.fillStyle = '#ef4444'; // Vermelho Suzuki / azul
+            ctxRide.beginPath();
+            ctxRide.moveTo(bikeX - 40, bikeY + 15);
+            ctxRide.lineTo(bikeX + 30, bikeY + 15);
+            ctxRide.lineTo(bikeX + 15, bikeY - 20);
+            ctxRide.lineTo(bikeX - 25, bikeY - 15);
+            ctxRide.closePath();
+            ctxRide.fill();
+
+            // Cúpula / Farol dianteiro
+            ctxRide.fillStyle = '#f8fafc';
+            ctxRide.fillRect(bikeX + 25, bikeY - 15, 12, 18);
+        } else {
+            // Suzuki RMX 50 (Enduro / Trail com rodas maiores e suspensão alta)
+            bikeY -= 8; // mais alta
+            // Rodas de raios grandes
+            ctxRide.strokeStyle = '#94a3b8';
+            ctxRide.lineWidth = 4;
+            ctxRide.beginPath();
+            ctxRide.arc(bikeX - 60, bikeY + 28, 26, 0, Math.PI * 2);
+            ctxRide.arc(bikeX + 60, bikeY + 28, 26, 0, Math.PI * 2);
+            ctxRide.stroke();
+
+            // Guarda-lamas alto Enduro
+            ctxRide.fillStyle = '#f8fafc';
+            ctxRide.beginPath();
+            ctxRide.moveTo(bikeX + 40, bikeY + 5);
+            ctxRide.lineTo(bikeX + 80, bikeY - 5);
+            ctxRide.stroke();
+
+            // Corpo RMX
+            ctxRide.fillStyle = '#2563eb'; // Azul Suzuki Enduro
+            ctxRide.fillRect(bikeX - 35, bikeY - 10, 75, 22);
+        }
+
+        ctxRide.restore();
+    }
+
+    // Inicialização
+    updateSimConfig();
+    requestAnimationFrame(updatePhysics);
+</script>
+
 </body>
 </html>
